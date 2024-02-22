@@ -1,0 +1,23 @@
+ To start Django project:
+ Install Python, and create virtualenv in the root folder - find-your-own
+ 1. python -m venv venv
+ 2. source venv/bin/activate
+
+ Install dependencies:
+ 1. pip install -r be/requirements.txt
+
+Make migrations:
+1. python be/manage.py makemigrations
+2. python be/manage.py migrate
+
+ Start project:
+1. python be/manage.py runserver
+
+You should see message like this:
+System check identified no issues (0 silenced).
+February 22, 2024 - 07:21:31
+Django version 5.0.2, using settings 'project.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+It's running on the port 8000.
