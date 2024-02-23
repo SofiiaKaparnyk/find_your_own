@@ -1,60 +1,68 @@
-import json
-
 from django.contrib.auth import authenticate, login, logout
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
+from django.utils.text import slugify
+from rest_framework import permissions, status
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from users.models import User
+from users.serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 
 
-@csrf_exempt
-def register_user(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        username = data.get("username")
-        email = data.get("email")
-        password = data.get("password")
+class UserRegister(APIView):
+    permission_classes = (permissions.AllowAny,)
 
-        # Check if username or email already exists
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({"error": "Username already exists"}, status=400)
-        if User.objects.filter(email=email).exists():
-            return JsonResponse({"error": "Email already exists"}, status=400)
+    def post(self, request):
+        serializer = UserRegistrationSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = User.objects.create_user(
+                username=self._create_username(serializer.validated_data),
+                first_name=serializer.validated_data["first_name"],
+                last_name=serializer.validated_data["last_name"],
+                email=serializer.validated_data["email"],
+                password=serializer.validated_data["password"],
+            )
+            if user:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        # Create the user
-        user = User.objects.create_user(username=username, email=email, password=password)
-        user.save()
+    def _create_username(self, data):
+        # Generate a unique username based on the user's first name and last name
+        base_username = slugify(f"{data['first_name']}-{data['last_name']}")
+        username = base_username
+        suffix = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}-{suffix}"
+            suffix += 1
+        return username
 
-        # Log in the user
-        login(request, user)
 
-        return JsonResponse({"message": "User created and logged in successfully"}, status=201)
-    else:
-        return JsonResponse({"error": "Method not allowed"}, status=405)
+class UserLogin(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (SessionAuthentication,)
 
-
-@csrf_exempt
-def login_user(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        username = data.get("username")
-        password = data.get("password")
-        user = authenticate(request, email=username, password=password)
-
-        if user is not None:
+    def post(self, request):
+        serializer = UserLoginSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = authenticate(
+                email=serializer.validated_data["email"], password=serializer.validated_data["password"]
+            )
+            if not user:
+                return Response({"error": "Invalid credentials"}, status=status.HTTP_403_FORBIDDEN)
             login(request, user)
-            return JsonResponse({"message": "Login successful"}, status=200)
-        else:
-            return JsonResponse({"error": "Invalid credentials"}, status=400)
-    else:
-        return JsonResponse({"error": "Method not allowed"}, status=405)
+            return Response(status=status.HTTP_200_OK)
 
 
-@csrf_exempt
-def logout_user(request):
-    if request.method == "POST":
+class UserLogout(APIView):
+    def post(self, request):
         logout(request)
-        return JsonResponse({"message": "Logout successful"}, status=200)
-    else:
-        return JsonResponse({"error": "Method not allowed"}, status=405)
+        return Response(status=status.HTTP_200_OK)
+
+
+class UserView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response({"user": serializer.data}, status=status.HTTP_200_OK)
