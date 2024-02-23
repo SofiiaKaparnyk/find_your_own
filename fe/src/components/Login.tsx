@@ -1,106 +1,149 @@
-import React, {FormEvent, useState} from 'react';
-import {Button, Container, TextField, Typography} from '@mui/material';
+import React from 'react';
+import { Button, Container, TextField, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { AxiosError } from 'axios';
+import { useTranslation } from 'react-i18next';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import axiosInstance from '../axios';
 import mapImg from 'assets/mapb.png';
-import {Link} from 'react-router-dom';
+import { IBEError } from 'types/User';
+
+interface IFormInput {
+  email: string;
+  password: string;
+}
 
 export default function LogIn() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const { t } = useTranslation();
 
-    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email(t('validation.incorrectEmail'))
+      .required(t('validation.required')),
+    password: Yup.string()
+      .required(t('validation.required'))
+      .min(8, t('validation.passwordMin')),
+  });
 
-        try {
-            const response = await fetch('http://localhost:8000/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({email, password}),
-            });
+  const {
+    formState: { errors },
+    control,
+    handleSubmit,
+  } = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    resolver: yupResolver(validationSchema),
+  });
 
-            if (response.ok) {
-                // Handle successful login
-                console.log('Login successful');
-            } else {
-                // Handle login error
-                console.error('Login failed');
-            }
-        } catch (error) {
-            console.error('An error occurred', error);
-        }
-    };
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    try {
+      const response = await axiosInstance.post('/users/login', data);
 
-    return (
-        <Container
-            maxWidth="xl"
-            sx={{
-                display: 'grid',
-                placeItems: 'center',
-                position: 'relative',
-                width: '100%',
-                height: '100%',
-                padding: 3,
-                background: {
-                    xs: `
+      if (response) {
+        // Handle successful login
+        console.log(response);
+        console.log('Login successful');
+      } else {
+        // Handle login error
+        console.error('Login failed');
+      }
+    } catch (error) {
+      console.log(error);
+      console.error(
+        'An error occurred',
+        (error as AxiosError<IBEError>).response?.data.error
+      );
+    }
+  };
+
+  return (
+    <Container
+      maxWidth="xl"
+      sx={{
+        display: 'grid',
+        placeItems: 'center',
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        padding: 3,
+        background: {
+          xs: `
             linear-gradient(0deg, transparent 0%, #22346a 100%),
             url(${mapImg}) left bottom / cover no-repeat
           `,
-                    md: `
+          md: `
             linear-gradient(0deg, transparent 0%, #22346a 100%),
             url(${mapImg}) left bottom / cover no-repeat
           `,
-                },
-            }}
+        },
+      }}
+    >
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{
+          background: 'white',
+          color: 'var(--darkBlue)',
+          width: '400px',
+          borderRadius: '20px',
+          padding: '36px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px',
+        }}
+      >
+        <Typography variant="h4">{t('login.title')}</Typography>
+
+        <Controller
+          name="email"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              id="email-input"
+              type="email"
+              size="small"
+              fullWidth
+              label="Email"
+              error={!!errors.email?.message}
+              helperText={errors.email?.message}
+            />
+          )}
+        />
+
+        <Controller
+          name="password"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              id="password-input"
+              type="password"
+              size="small"
+              fullWidth
+              label={t('login.password')}
+              error={!!errors.password?.message}
+              helperText={errors.password?.message}
+            />
+          )}
+        />
+
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ background: 'var(--darkBlue)', mt: 2 }}
         >
-            <form
-                onSubmit={handleSubmit}
-                style={{
-                    background: 'white',
-                    color: 'var(--darkBlue)',
-                    width: '400px',
-                    borderRadius: '20px',
-                    padding: '36px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '16px',
-                }}
-            >
-                <Typography variant="h4">Log in</Typography>
-                <TextField
-                    size="small"
-                    id="email-input"
-                    fullWidth
-                    label="Email"
-                    type="email"
-                    value={email}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        setEmail(event.target.value);
-                    }}
-                />
-                <TextField
-                    size="small"
-                    id="password-input"
-                    fullWidth
-                    label="Password"
-                    type="password"
-                    value={password}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        setPassword(event.target.value);
-                    }}
-                />
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{background: 'var(--darkBlue)', mt: 2}}
-                >
-                    Log in
-                </Button>
-                <Typography variant="body2">
-                    Don't have an account? <Link to="/signup">Sign up</Link>
-                </Typography>
-            </form>
-        </Container>
-    );
+          {t('login.submit')}
+        </Button>
+
+        <Typography variant="body2">
+          {t('login.question')} <Link to="/signup">{t('signup.title')}</Link>
+        </Typography>
+      </form>
+    </Container>
+  );
 }

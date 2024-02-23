@@ -8,6 +8,13 @@ import EN from 'assets/languages/united-states-flag-icon.png';
 const resources = {
   en: {
     translation: {
+      validation: {
+        required: 'This field is required',
+        passwordMin: 'Minimum 8 characters',
+        nameMin: 'Minimum 2 characters',
+        incorrectEmail: 'Email is invalid',
+        match: 'The password does not match!'
+      },
       header: {
         logo: 'FIND YOUR OWN',
         flag: EN,
@@ -17,10 +24,32 @@ const resources = {
         description:
           "Welcome to our platform, where every dot on the map represents a person waiting to be discovered! Explore, connect, and navigate through our interactive map to find your own near you. Whether it's making new friends, networking professionally, or simply discovering fascinating stories, our website brings people together like never before. Start exploring now and uncover the world, one pin at a time!",
       },
+      login: {
+        title: 'Log in',
+        password: 'Password',
+        submit: 'Log in',
+        question: "Don't have an account?",
+      },
+      signup: {
+        title: 'Sign up',
+        firstname: 'First name',
+        lastname: 'Last name',
+        password: 'Password',
+        confirm: 'Confirm password',
+        submit: 'Submit',
+        question: 'Already have an account?',
+      },
     },
   },
   uk: {
     translation: {
+      validation: {
+        required: "Це поле обов`язкове",
+        passwordMin: 'Мінімум 8 символів',
+        nameMin: 'Мінімум 2 символи',
+        incorrectEmail: 'Некоректний email',
+        match: 'Пароль не збігається!'
+      },
       header: {
         logo: 'ЗНАЙДИ СВОЇХ',
         flag: UK,
@@ -29,6 +58,21 @@ const resources = {
         title: 'Знайди свого товариша на карті',
         description:
           "Ласкаво просимо на нашу платформу, де кожна точка на мапі представляє людину, яка чекає на вас! Досліджуйте, знаходьте зв'язки та навігуйте через нашу інтерактивну карту, щоб знайти своїх поблизу вас. Чи це заведення нових друзів, професійне спілкування або просто відкриття захоплюючих історій, наш веб-сайт об'єднує людей як ніколи раніше. Розпочніть дослідження зараз і відкрийте світ, крапка за крапкою!",
+      },
+      login: {
+        title: 'Увійти',
+        password: 'Пароль',
+        submit: 'Увійти',
+        question: 'Ще не маєте облікового запису?',
+      },
+      signup: {
+        title: 'Зареєструватися',
+        firstname: "Ім'я",
+        lastname: 'Призвище',
+        password: 'Пароль',
+        confirm: 'Підтвердження паролю',
+        submit: 'Підтвердити',
+        question: 'Вже маєте обліковий запис?',
       },
     },
   },
