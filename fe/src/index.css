@@ -7,7 +7,8 @@
 :root {
   --darkBlue: #22346a;
   --lightBlue: #3957b1;
-  --gradient: linear-gradient(0deg, transparent 0%, var(--darkBlue) 100%): ;
+  --gradient: linear-gradient(0deg, transparent 0%, var(--darkBlue) 100%);
+  --headerHeight: 70px;
 }
 
 body {

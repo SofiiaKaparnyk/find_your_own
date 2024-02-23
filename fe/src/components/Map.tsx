@@ -13,8 +13,8 @@ export default function Map() {
     <MapContainer
       center={VancouverCenter}
       zoom={13}
-      scrollWheelZoom={false}
-      style={{ height: '100%', borderRadius: '20px' }}
+      scrollWheelZoom={true}
+      style={{ height: '100%', zIndex: 0, width: '100%' }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

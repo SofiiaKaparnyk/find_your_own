@@ -14,7 +14,7 @@ const pages = [
 
 const Header: React.FC = () => {
   return (
-    <AppBar position="static" sx={{ backgroundColor: 'var(--darkBlue)' }}>
+    <AppBar position="static" sx={{ backgroundColor: 'var(--darkBlue)', height: 'var(--headerHeight)', alignItems: 'center', zIndex: 999 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <DesktopEl pages={pages} />

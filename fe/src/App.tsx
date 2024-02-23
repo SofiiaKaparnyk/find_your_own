@@ -6,6 +6,7 @@ import './i18n';
 import './App.css';
 import SignUp from 'components/Signup';
 import LogIn from 'components/Login';
+import Home from 'components/Home';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route index element={<Hero />} />
           <Route path="login" element={<LogIn />} />
           <Route path="signup" element={<SignUp />} />
+          <Route path="map" element={<Home />} />
           {/* <Route path="about" element={<SignUp />} /> */}
         </Route>
       </Routes>

@@ -16,11 +16,11 @@ export default function Hero() {
         padding: 3,
         background: {
           xs: `
-            linear-gradient(0deg, transparent 0%, #22346a 100%),
+            var(--gradient),
             url(${waveImg}) -150px -20vh / cover no-repeat,
             url(${mapImg}) left bottom / cover no-repeat`,
           md: `
-            linear-gradient(0deg, transparent 0%, #22346a 100%),
+          var(--gradient),
             url(${waveImg}) left -20vh / cover no-repeat,
             url(${mapImg}) left bottom / cover no-repeat
           `,

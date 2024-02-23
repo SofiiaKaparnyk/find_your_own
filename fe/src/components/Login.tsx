@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Container, TextField, Typography } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
@@ -17,6 +17,7 @@ interface IFormInput {
 
 export default function LogIn() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -24,7 +25,6 @@ export default function LogIn() {
       .required(t('validation.required')),
     password: Yup.string()
       .required(t('validation.required'))
-      .min(8, t('validation.passwordMin')),
   });
 
   const {
@@ -45,7 +45,7 @@ export default function LogIn() {
 
       if (response) {
         // Handle successful login
-        console.log(response);
+        navigate('/map')
         console.log('Login successful');
       } else {
         // Handle login error
