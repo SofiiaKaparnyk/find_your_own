@@ -8,10 +8,13 @@ class User(AbstractUser):
     email = models.EmailField(_("email address"), unique=True, max_length=100)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
-    # dob = models.DateField(required=True)
-    # gender = models.CharField(required=True, max_length=1)
-    # # location # TODO ?
-    # description = models.CharField(null=True, max_length=500)
+    dob = models.DateField(null=True, blank=True)
+    gender = models.CharField(
+        max_length=1, null=True, blank=True, choices=[("M", "male"), ("F", "female"), ("O", "other")]
+    )
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    description = models.CharField(null=True, blank=True, max_length=500)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

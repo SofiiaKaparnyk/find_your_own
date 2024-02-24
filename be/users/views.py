@@ -26,10 +26,14 @@ class UserRegisterView(APIView):
             if serializer.is_valid():
                 user = User.objects.create_user(
                     username=self._create_username(serializer.validated_data),
-                    first_name=serializer.validated_data["first_name"],
-                    last_name=serializer.validated_data["last_name"],
                     email=serializer.validated_data["email"],
                     password=serializer.validated_data["password"],
+                    first_name=serializer.validated_data["first_name"],
+                    last_name=serializer.validated_data["last_name"],
+                    dob=serializer.validated_data.get("dob"),
+                    gender=serializer.validated_data.get("gender"),
+                    latitude=serializer.validated_data.get("latitude"),
+                    longitude=serializer.validated_data.get("longitude"),
                 )
                 if user:
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -85,6 +89,11 @@ class UserProfileView(APIView):
             user = User.objects.get(pk=user.pk)
             user.first_name = data["first_name"]
             user.last_name = data["last_name"]
+            user.dob = data["dob"]
+            user.gender = data["gender"]
+            user.latitude = data["latitude"]
+            user.longitude = data["longitude"]
+            user.description = data["description"]
             user.save()
             serializer_data = UserSerializer(user)
             return Response(serializer_data.data, status=status.HTTP_200_OK)
