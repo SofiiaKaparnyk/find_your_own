@@ -22,31 +22,23 @@ class UserRegisterView(APIView):
 
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
-        try:
-            if serializer.is_valid():
-                user = User.objects.create_user(
-                    username=self._create_username(serializer.validated_data),
-                    email=serializer.validated_data["email"],
-                    password=serializer.validated_data["password"],
-                    first_name=serializer.validated_data["first_name"],
-                    last_name=serializer.validated_data["last_name"],
-                    dob=serializer.validated_data.get("dob"),
-                    gender=serializer.validated_data.get("gender"),
-                    latitude=serializer.validated_data.get("latitude"),
-                    longitude=serializer.validated_data.get("longitude"),
-                )
-                if user:
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-            else:
-                default_errors = serializer.errors
-                errors = {}
-                for field_name, field_errors in default_errors.items():
-                    errors[field_name] = field_errors
-                return Response({"error": errors}, status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid(raise_exception=True):
+            user = User.objects.create_user(
+                username=self._create_username(serializer.validated_data),
+                email=serializer.validated_data["email"],
+                password=serializer.validated_data["password"],
+                first_name=serializer.validated_data["first_name"],
+                last_name=serializer.validated_data["last_name"],
+                dob=serializer.validated_data.get("dob"),
+                gender=serializer.validated_data.get("gender"),
+                latitude=serializer.validated_data.get("latitude"),
+                longitude=serializer.validated_data.get("longitude"),
+            )
+            if user:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def _create_username(self, data):
         # Generate a unique username based on the user's first name and last name
@@ -84,7 +76,7 @@ class UserProfileView(APIView):
     def put(self, request):
         user = request.user
         serializer = UserSerializer(user, data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             data = serializer.validated_data
             user = User.objects.get(pk=user.pk)
             user.first_name = data["first_name"]
