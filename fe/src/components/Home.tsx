@@ -12,8 +12,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MapIcon from '@mui/icons-material/Map';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SettingsIcon from '@mui/icons-material/Settings';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import Map from './Map';
 import { NavLink } from 'react-router-dom';
 
@@ -27,7 +25,7 @@ export default function Home() {
         display: 'flex',
       }}
     >
-      <Paper
+      {/* <Paper
         sx={{
           minWidth: '240px',
           background: 'var(--darkBlue)',
@@ -71,7 +69,7 @@ export default function Home() {
             </ListItemButton>
           </ListItem>
         </List>
-      </Paper>
+      </Paper> */}
       <Map />
     </div>
   );

@@ -8,10 +8,9 @@ export default function Hero() {
   const { t } = useTranslation();
   return (
     <Container
-      maxWidth="xl"
       sx={{
         position: 'relative',
-        width: '100%',
+        minWidth: '100%',
         height: '100%',
         padding: 3,
         background: {

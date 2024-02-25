@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import { useTranslation } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 
 interface Props {
   pages: { title: string; link: string }[];
@@ -19,25 +19,35 @@ export default function DesktopEl({ pages }: Props) {
 
   return (
     <>
-      <PersonSearchIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-      <Typography
-        variant="h6"
-        noWrap
-        component="a"
-        href="#app-bar-with-responsive-menu"
-        sx={{
+      <Link
+        to="/"
+        style={{
           flexGrow: 1,
-          mr: 2,
-          display: { xs: 'none', md: 'flex' },
-          fontFamily: 'monospace',
-          fontWeight: 700,
-          letterSpacing: '.1rem',
-          color: 'inherit',
+          marginRight: '16px',
+          color: 'white',
+          display: 'flex',
+          alignItems: 'center',
           textDecoration: 'none',
         }}
       >
-        {t('header.logo')}
-      </Typography>
+        <PersonSearchIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+        <Typography
+          variant="h6"
+          noWrap
+          sx={{
+            flexGrow: 1,
+            mr: 2,
+            display: { xs: 'none', md: 'flex' },
+            fontFamily: 'monospace',
+            fontWeight: 700,
+            letterSpacing: '.1rem',
+            color: 'inherit',
+            textDecoration: 'none',
+          }}
+        >
+          {t('header.logo')}
+        </Typography>
+      </Link>
 
       <Box sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
         {pages.map((page) => (
