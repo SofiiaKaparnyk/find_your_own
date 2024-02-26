@@ -34,6 +34,7 @@ class UserRegisterView(APIView):
                 gender=serializer.validated_data.get("gender"),
                 latitude=serializer.validated_data.get("latitude"),
                 longitude=serializer.validated_data.get("longitude"),
+                image=serializer.validated_data.get("image"),
             )
             if user:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -86,6 +87,7 @@ class UserProfileView(APIView):
             user.latitude = data["latitude"]
             user.longitude = data["longitude"]
             user.description = data["description"]
+            user.image = data["image"]
             user.save()
             serializer_data = UserSerializer(user)
             return Response(serializer_data.data, status=status.HTTP_200_OK)
