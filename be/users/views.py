@@ -1,14 +1,14 @@
 from django.contrib.auth import logout
 from django.utils.text import slugify
 from rest_framework import permissions, status
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import User
-from users.serializers import UserRegistrationSerializer, UserSerializer
+from users.serializers import UserRegistrationSerializer, UserSerializer, UsersSerializer
 
 from .serializers import CustomTokenObtainSerializer
 
@@ -92,7 +92,13 @@ class UserProfileView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UsersView(ListAPIView):
+class UserListView(ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = UserSerializer
+    serializer_class = UsersSerializer
+    queryset = User.objects.all()
+
+
+class UserDetailView(RetrieveAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UsersSerializer
     queryset = User.objects.all()
