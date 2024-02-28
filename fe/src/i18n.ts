@@ -10,10 +10,12 @@ const resources = {
     translation: {
       validation: {
         required: 'This field is required',
-        passwordMin: 'Minimum 8 characters',
+        passwordMin: 'Minimum 6 characters',
         nameMin: 'Minimum 2 characters',
         incorrectEmail: 'Email is invalid',
-        match: 'The password does not match!'
+        match: 'The password does not match!',
+        equelDate: "Date of birth mustn't be equal to current date",
+        location: "You haven't chosen your location",
       },
       header: {
         logo: 'FIND YOUR OWN',
@@ -39,18 +41,26 @@ const resources = {
         password: 'Password',
         confirm: 'Confirm password',
         submit: 'Submit',
+        back: 'Back',
         question: 'Already have an account?',
+        warning:
+          "Click on the map to show a marker at the detected location. Your location is in the center of the blue area. You can move the marker so that it doesn't point to your exact location, but you stay in the blue area.",
+        step1: 'Email and password',
+        step2: 'Personal data',
+        step3: 'Your approximate location',
       },
     },
   },
   uk: {
     translation: {
       validation: {
-        required: "Це поле обов`язкове",
-        passwordMin: 'Мінімум 8 символів',
+        required: 'Це поле обов`язкове',
+        passwordMin: 'Мінімум 6 символів',
         nameMin: 'Мінімум 2 символи',
         incorrectEmail: 'Некоректний email',
-        match: 'Пароль не збігається!'
+        match: 'Пароль не збігається!',
+        equelDate: 'Вибрана дана не може бути рівною теперішній даті',
+        location: 'Ви не вказали локацію',
       },
       header: {
         logo: 'ЗНАЙДИ СВОЇХ',
@@ -76,7 +86,13 @@ const resources = {
         password: 'Пароль',
         confirm: 'Підтвердження паролю',
         submit: 'Підтвердити',
+        back: 'Назад',
         question: 'Вже маєте обліковий запис?',
+        warning:
+          'Клацніть на карті, щоб показати маркер на виявленому місці. Ваше місцезнаходження знаходиться в центрі синьої зони. Ви можете перемістити маркер, щоб він не вказував на ваше точне місцезнаходження, але ви залишаєтесь у синій області.',
+        step1: 'Email та пароль',
+        step2: 'Персональні дані',
+        step3: 'Ваша приблизна локація',
       },
     },
   },

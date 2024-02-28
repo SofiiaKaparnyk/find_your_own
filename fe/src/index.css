@@ -27,7 +27,7 @@ body {
   flex-direction: column;
 }
 
-.MuiFormControl-root .MuiInputLabel-root.Mui-focused {
+/* .MuiFormControl-root .MuiInputLabel-root.Mui-focused {
   color: var(--darkBlue);
 }
 
@@ -42,7 +42,7 @@ body {
 .MuiFormControl-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
   border: 2px solid var(--darkBlue);
 }
-
+ */
 .MuiFormHelperText-root {
   position: absolute;
   bottom: -20px;

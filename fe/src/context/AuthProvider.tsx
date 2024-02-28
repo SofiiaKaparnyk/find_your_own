@@ -7,8 +7,8 @@ import AxiosService from '../utils/axios';
 
 interface IDefaultValue {
   isAuthenticated: boolean;
-  isLoading: boolean;
-  register: SubmitHandler<ISignupData>;
+  isLoaded: boolean;
+  register: SubmitHandler<ISignupData<string>>;
   logIn: SubmitHandler<ILoginData>;
   logOut: () => void;
 }
@@ -19,7 +19,7 @@ interface ILoginResponse {
 }
 const defaultValue: IDefaultValue = {
   isAuthenticated: false,
-  isLoading: false,
+  isLoaded: false,
   register: () => {},
   logIn: () => {},
   logOut: () => {},
@@ -28,33 +28,37 @@ const defaultValue: IDefaultValue = {
 const AuthContext = createContext(defaultValue);
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
-  const [isAuthenticated, setAuthenticated] = useState(!!localStorage.getItem('access_token'));
-  const [isLoading, setLoading] = useState(true);
+  const [isAuthenticated, setAuthenticated] = useState(false);
+  const [isLoaded, setLoaded] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      const token = localStorage.getItem('access_token') || '';
-      AxiosService.setToken(token);
-    } else {
-      
-      const refreshToken = localStorage.getItem('refresh_token') || '';
-      if (refreshToken) {
+    const checkAuthorization = async () => {
+      const accessToken = localStorage.getItem('access_token');
+      const refreshToken = localStorage.getItem('refresh_token');
+
+      if(accessToken && refreshToken) {
+        AxiosService.setToken(accessToken, refreshToken);
+        setAuthenticated(true);
+      } else if(refreshToken) {
         AxiosService.getAxiosInstance()
           .post('/users/token/refresh/', { refresh: refreshToken })
           .then((response) => {
             if (response.status === 200) {
-              AxiosService.setToken(response.data.access);
-              localStorage.setItem('access_token', response.data.access);
-              localStorage.setItem('refresh_token', response.data.refresh);
+              AxiosService.setToken(response.data.access, response.data.refresh);
               setAuthenticated(true);
             }
           })
-          .finally(() => setLoading(false));
+          .catch((error) => {
+            console.log(error);
+            setAuthenticated(false);
+          });
+      } else {
+        setAuthenticated(false);
       }
     }
-    setLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    checkAuthorization().finally(() => setLoaded(true));
   }, []);
 
   const logIn: SubmitHandler<ILoginData> = async (data) => {
@@ -65,9 +69,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       );
 
       if (response.data) {
-        AxiosService.setToken(response.data.access);
-        localStorage.setItem('refresh_token', response.data.refresh);
-        localStorage.setItem('access_token', response.data.access);
+        AxiosService.setToken(response.data.access, response.data.refresh);
         setAuthenticated(true);
         navigate('/map');
         return;
@@ -79,7 +81,9 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const register: SubmitHandler<ISignupData> = async (data) => {
+  const register: SubmitHandler<ISignupData<string>> = async (data) => {
+    console.log("register", data)
+
     try {
       const response = await AxiosService.getAxiosInstance().post<IUser>(
         '/users/register/',
@@ -98,18 +102,20 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const logOut = async () => {
     const refreshToken = localStorage.getItem('refresh_token') || '';
+    try {
+      await AxiosService.getAxiosInstance().post('/users/logout/', {
+        refresh_token: refreshToken,
+      });
 
-    await AxiosService.getAxiosInstance().post('/users/logout/', {
-      refresh_token: refreshToken,
-    });
-
-    AxiosService.removeToken();
-    localStorage.clear();
-    setAuthenticated(false);
-    navigate('/');
+      AxiosService.removeToken();
+      setAuthenticated(false);
+      navigate('/');
+    } catch (error) {
+      console.error((error as AxiosError<IBackEndError>).response?.data.type);
+    }
   };
 
-  const value = { isAuthenticated, isLoading, register, logIn, logOut };
+  const value = { isAuthenticated, isLoaded, register, logIn, logOut };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 

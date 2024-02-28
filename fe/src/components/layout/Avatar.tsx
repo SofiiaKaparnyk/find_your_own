@@ -25,7 +25,7 @@ const menu = [
 
 export default function UserAvatar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const { logOut } = useAuth();
+  const { logOut, isAuthenticated } = useAuth();
   // const { t } = useTranslation();
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
@@ -44,11 +44,11 @@ export default function UserAvatar() {
   return (
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open profile menu">
-        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+        <IconButton onClick={isAuthenticated ? handleOpenUserMenu : () => {}} sx={{ p: 0 }}>
           <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
         </IconButton>
       </Tooltip>
-      <Menu
+      {isAuthenticated && <Menu
         sx={{
           mt: '45px',
           '.MuiPaper-root': {
@@ -96,7 +96,7 @@ export default function UserAvatar() {
             {'Log out'}
           </Typography>
         </MenuItem>
-      </Menu>
+      </Menu>}
     </Box>
   );
 }

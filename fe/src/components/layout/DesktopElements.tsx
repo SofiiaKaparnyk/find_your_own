@@ -19,25 +19,25 @@ export default function DesktopEl({ pages }: Props) {
 
   return (
     <>
-      <Link
+      <Box
+        component={Link}
         to="/"
-        style={{
+        sx={{
           flexGrow: 1,
           marginRight: '16px',
           color: 'white',
-          display: 'flex',
+          display: { xs: 'none', md: 'flex' },
           alignItems: 'center',
           textDecoration: 'none',
         }}
       >
-        <PersonSearchIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+        <PersonSearchIcon sx={{ mr: 1 }} />
         <Typography
           variant="h6"
           noWrap
           sx={{
             flexGrow: 1,
             mr: 2,
-            display: { xs: 'none', md: 'flex' },
             fontFamily: 'monospace',
             fontWeight: 700,
             letterSpacing: '.1rem',
@@ -47,7 +47,7 @@ export default function DesktopEl({ pages }: Props) {
         >
           {t('header.logo')}
         </Typography>
-      </Link>
+      </Box>
 
       <Box sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
         {pages.map((page) => (
