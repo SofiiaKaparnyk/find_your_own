@@ -1,4 +1,8 @@
 venv
 .env
 db.sqlite3
+<<<<<<< HEAD
 __pycache__
+=======
+.idea
+>>>>>>> 9465cf1f5a2f8a62027ab7801767c5130d80db8d

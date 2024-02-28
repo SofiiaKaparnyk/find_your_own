@@ -1,14 +1,14 @@
 from django.contrib.auth import logout
 from django.utils.text import slugify
 from rest_framework import permissions, status
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import User
-from users.serializers import UserRegistrationSerializer, UserSerializer
+from users.serializers import UserRegistrationSerializer, UserSerializer, UsersSerializer
 
 from .serializers import CustomTokenObtainSerializer
 
@@ -34,6 +34,7 @@ class UserRegisterView(APIView):
                 gender=serializer.validated_data.get("gender"),
                 latitude=serializer.validated_data.get("latitude"),
                 longitude=serializer.validated_data.get("longitude"),
+                image=serializer.validated_data.get("image"),
             )
             if user:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -86,13 +87,20 @@ class UserProfileView(APIView):
             user.latitude = data["latitude"]
             user.longitude = data["longitude"]
             user.description = data["description"]
+            user.image = data["image"]
             user.save()
             serializer_data = UserSerializer(user)
             return Response(serializer_data.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UsersView(ListAPIView):
+class UserListView(ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = UserSerializer
+    serializer_class = UsersSerializer
+    queryset = User.objects.all()
+
+
+class UserDetailView(RetrieveAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UsersSerializer
     queryset = User.objects.all()

@@ -19,4 +19,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ("password", "groups", "user_permissions")  # TODO discuss which fields should be returned
+        exclude = ("password", "groups", "user_permissions")
+
+
+class UsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "first_name", "last_name", "description", "longitude", "latitude", "image")

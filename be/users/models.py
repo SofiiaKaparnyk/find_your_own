@@ -15,6 +15,10 @@ class User(AbstractUser):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     description = models.CharField(null=True, blank=True, max_length=500)
+    image = models.ImageField(null=True, blank=True, upload_to="profile_pics")
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.username
