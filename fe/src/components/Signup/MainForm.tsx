@@ -1,5 +1,6 @@
 import React from 'react';
-import { TextField } from '@mui/material';
+import { Box, TextField } from '@mui/material';
+import LockPersonIcon from '@mui/icons-material/LockPerson';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,8 +8,8 @@ import { useForm, Controller, FieldErrors, SubmitHandler } from 'react-hook-form
 import { ISignupData } from 'types';
 
 const formStyle: Record<string | number, string & {}> = {
-  display: 'flex',
-  flexDirection: 'column',
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
   gap: '30px',
   marginBottom: '14px',
 };
@@ -50,18 +51,30 @@ export default function MainForm({ submitForm, formData }: IProps) {
 
   return (
     <form id="signupForm" onSubmit={handleSubmit(submitForm)} style={formStyle}>
-      {formInputs.map((input) => {
-        return (
-          <ControlledInput
-            key={input.name}
-            name={input.name}
-            label={input.label}
-            type={input.type}
-            control={control}
-            errors={errors}
-          />
-        );
-      })}
+      <Box
+        sx={{
+          gridColumn: { xs: '1 / 3', md: '1 / 2' },
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '30px',
+        }}
+      >
+        {formInputs.map((input) => {
+          return (
+            <ControlledInput
+              key={input.name}
+              name={input.name}
+              label={input.label}
+              type={input.type}
+              control={control}
+              errors={errors}
+            />
+          );
+        })}
+      </Box>
+      <Box sx={{ display: { xs: 'none', md: 'grid' }, placeItems: 'center' }}>
+        <LockPersonIcon sx={{ maxWidth: '200px', maxHeight: '200px', width: '100%', height: '100%' }} />
+      </Box>
     </form>
   );
 }
