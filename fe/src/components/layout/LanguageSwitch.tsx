@@ -3,14 +3,14 @@ import { Box, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useTranslation } from 'react-i18next';
 
-const languages = [
-  { title: 'English', lng: 'en' },
-  { title: 'Ukrainian', lng: 'uk' },
-];
-
 export default function LanguageSwitch() {
   const [anchorElLng, setAnchorElLng] = useState<null | HTMLElement>(null);
   const { t, i18n } = useTranslation();
+
+  const languages = [
+    { title: t('language.english'), lng: 'en' },
+    { title: t('language.ukrainian'), lng: 'uk' },
+  ];
 
   const handleOpenLngMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElLng(event.currentTarget);
@@ -23,6 +23,7 @@ export default function LanguageSwitch() {
   const handleClickLngMenu = (lng: string | null) => {
     if (lng) {
       i18n.changeLanguage(lng);
+      localStorage.setItem('language', lng);
     }
     setAnchorElLng(null);
   };

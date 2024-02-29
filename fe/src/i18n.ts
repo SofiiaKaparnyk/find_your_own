@@ -8,6 +8,21 @@ import EN from 'assets/languages/united-states-flag-icon.png';
 const resources = {
   en: {
     translation: {
+      appbar: {
+        about: 'About',
+        login: 'Log in',
+        signup: 'Sign up',
+        menu: {
+          map: 'Map',
+          account: 'Account',
+          settings: 'Settings',
+          logout: 'Log out',
+        },
+      },
+      language: {
+        english: 'English',
+        ukrainian: 'Ukrainian'
+      },
       validation: {
         required: 'This field is required',
         passwordMin: 'Minimum 6 characters',
@@ -53,6 +68,21 @@ const resources = {
   },
   uk: {
     translation: {
+      appbar: {
+        about: 'Про нас',
+        login: 'Увійти',
+        signup: 'Реєстрація',
+        menu: {
+          map: 'Мапа',
+          account: 'Акаунт',
+          settings: 'Налаштування',
+          logout: 'Вийти',
+        },
+      },
+      language: {
+        english: 'Англійська',
+        ukrainian: 'Українська'
+      },
       validation: {
         required: 'Це поле обов`язкове',
         passwordMin: 'Мінімум 6 символів',
@@ -102,7 +132,7 @@ i18n
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
     resources,
-    lng: 'en', // language to use, more information here: https://www.i18next.com/overview/configuration-options#languages-namespaces-resources
+    lng: localStorage.getItem('language') || 'en', // language to use, more information here: https://www.i18next.com/overview/configuration-options#languages-namespaces-resources
     // you can use the i18n.changeLanguage function to change the language manually: https://www.i18next.com/overview/api#changelanguage
     // if you're using a language detector, do not define the lng option
 

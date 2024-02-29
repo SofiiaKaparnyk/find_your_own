@@ -13,20 +13,20 @@ import MapIcon from '@mui/icons-material/Map';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from 'context/AuthProvider';
 import { NavLink } from 'react-router-dom';
-// import { useTranslation } from 'react-i18next';
-
-const menu = [
-  { title: 'Map', to: '/map', icon: MapIcon },
-  { title: 'Account', to: '/account', icon: AccountBoxIcon },
-  { title: 'Settings', to: '/settings', icon: SettingsIcon },
-];
 
 export default function UserAvatar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const { logOut, isAuthenticated, user } = useAuth();
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
+
+  const menu = [
+    { title: t('appbar.menu.map'), to: '/map', icon: MapIcon },
+    { title: t('appbar.menu.account'), to: '/account', icon: AccountBoxIcon },
+    { title: t('appbar.menu.settings'), to: '/settings', icon: SettingsIcon },
+  ];
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -93,7 +93,7 @@ export default function UserAvatar() {
             <LogoutIcon />
           </ListItemIcon>
           <Typography textAlign="center" sx={{ color: 'white' }}>
-            {'Log out'}
+            {t('appbar.menu.logout')}
           </Typography>
         </MenuItem>
       </Menu>}

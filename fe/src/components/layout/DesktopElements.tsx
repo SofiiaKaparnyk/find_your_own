@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
-import { useTranslation } from 'react-i18next';
 import { NavLink, Link } from 'react-router-dom';
 
 interface Props {
@@ -9,14 +8,6 @@ interface Props {
 }
 
 export default function DesktopEl({ pages }: Props) {
-  // const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-
-  const { t } = useTranslation();
-
-  // const handleCloseNavMenu = () => {
-  //   setAnchorElNav(null);
-  // };
-
   return (
     <>
       <Box
@@ -45,7 +36,7 @@ export default function DesktopEl({ pages }: Props) {
             textDecoration: 'none',
           }}
         >
-          {t('header.logo')}
+          FIND YOUR OWN
         </Typography>
       </Box>
 

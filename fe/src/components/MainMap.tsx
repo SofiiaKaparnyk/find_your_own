@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  MapContainer,
-  TileLayer,
   Popup,
   useMapEvents,
   Circle,
@@ -10,13 +8,14 @@ import {
 import L from 'leaflet';
 import AxiosService from 'utils/axios';
 import { AxiosError } from 'axios';
-import { IUser, IBackEndError } from 'types';
 import { Avatar, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { Endpoints } from '../constants';
+import MapContainer from './MapContainer';
+import { IUser, IBackEndError } from 'types';
 
 const VancouverCenter = { lat: 49.17863933718509, lng: -122.78459033434748 };
 
-export default function Map() {
+export default function MainMap() {
   const [users, setUsers] = useState<IUser[]>([]);
 
   useEffect(() => {
@@ -36,16 +35,7 @@ export default function Map() {
   }, []);
 
   return (
-    <MapContainer
-      center={VancouverCenter}
-      zoom={13}
-      scrollWheelZoom={true}
-      style={{ height: '100%', minHeight: '300px', zIndex: 0, width: '100%' }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <MapContainer>
       {users.map((user: any) => {
         return (
           <LocationMarker

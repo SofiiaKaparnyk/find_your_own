@@ -1,8 +1,8 @@
 export enum Endpoints {
   'USERS' = '/users/',
-  'USER_PROFILE' = '/user/profile/',
-  'REGISTER' = '/user/register/',
-  'LOGIN' = '/user/token/',
-  'LOGOUT' = '/user/logout/',
+  'USER_PROFILE' = '/users/profile/',
+  'REGISTER' = '/users/register/',
+  'LOGIN' = '/users/token/',
+  'LOGOUT' = '/users/logout/',
   'REFRESH_TOKEN' = '/users/token/refresh/',
 };
