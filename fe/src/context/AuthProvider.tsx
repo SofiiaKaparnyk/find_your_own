@@ -1,7 +1,7 @@
 import { useContext, createContext, PropsWithChildren, useState, useEffect } from 'react';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
-import IUser, { IBackEndError, ILoginData, ISignupData } from 'types';
+import { IBackEndError, ILoginData, ISignupData } from 'types';
 import { SubmitHandler } from 'react-hook-form';
 import AxiosService from '../utils/axios';
 
@@ -82,12 +82,15 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const register: SubmitHandler<ISignupData<string>> = async (data) => {
-    console.log("register", data)
-
     try {
-      const response = await AxiosService.getAxiosInstance().post<IUser>(
+      const response = await AxiosService.getAxiosInstance().post<ISignupData>(
         '/users/register/',
-        data
+        data,
+        {
+          headers: {
+              "Content-Type": "multipart/form-data",
+          },
+      }
       );
       if (response.data) {
         logIn({ email: response.data.email, password: response.data.password });

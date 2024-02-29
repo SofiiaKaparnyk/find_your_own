@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   MapContainer,
   TileLayer,
@@ -8,17 +8,32 @@ import {
   Marker,
 } from 'react-leaflet';
 import L from 'leaflet';
-import PersonPinIcon from 'assets/personPin.svg';
+import AxiosService from 'utils/axios';
+import { AxiosError } from 'axios';
+import { IBackEndError } from 'types';
 
 const VancouverCenter = { lat: 49.17863933718509, lng: -122.78459033434748 };
-const icon = new L.Icon({
-  iconUrl: PersonPinIcon, // Specify the path to your icon image
-  iconSize: [60, 60], // Size of the icon
-  iconAnchor: [30, 30], // Point of the icon which will correspond to marker's location
-  popupAnchor: [30, 30], // Point from which the popup should open relative to the iconAnchor
-});
+
 
 export default function Map() {
+  const [users, setUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      try{
+        const data = await AxiosService.getAxiosInstance().get('/users/');
+
+        if(data.status === 200) {
+          setUsers(data.data)
+        }
+      } catch (err) {
+        console.log((err as AxiosError<IBackEndError>).response?.data.errors[0].detail)
+      }
+    }
+
+    getUsers();
+  }, [])
+
   return (
     <MapContainer
       center={VancouverCenter}
@@ -30,15 +45,29 @@ export default function Map() {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <LocationMarker />
+      {
+        users.map((user: any) => {
+          return (
+            <LocationMarker key={user.id} userPosition={{ lat: user.latitude, lng: user.longitude }} img={user.image} />
+
+          )
+        })
+      }
     </MapContainer>
   );
 }
 
-function LocationMarker() {
-  const [position, setPosition] = useState(VancouverCenter);
+function LocationMarker({ userPosition, img }: { userPosition: typeof VancouverCenter, img: string }) {
+  const [position, setPosition] = useState(userPosition);
   const markerRef = useRef<null | any>(null);
   const circleRef = useRef<null | any>(null);
+
+  const icon = new L.Icon({
+    iconUrl: img, // Specify the path to your icon image
+    iconSize: [60, 60], // Size of the icon
+    iconAnchor: [30, 30], // Point of the icon which will correspond to marker's location
+    popupAnchor: [30, 30], // Point from which the popup should open relative to the iconAnchor
+  });
 
   const map = useMapEvents({
     click() {

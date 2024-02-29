@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { ChangeEvent, useRef } from 'react';
 import {
   Box,
+  Button,
   FormControl,
   FormHelperText,
   InputLabel,
@@ -32,6 +33,7 @@ interface IProps {
 
 export default function PersonalForm({ submitForm, formData }: IProps) {
   const { t } = useTranslation();
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const validationSchema = Yup.object({
     first_name: Yup.string()
@@ -41,9 +43,12 @@ export default function PersonalForm({ submitForm, formData }: IProps) {
       .required(t('validation.required'))
       .min(2, t('validation.nameMin')),
     gender: Yup.string().required(t('validation.required')),
-    dob: Yup.date().required(t('validation.required')).test('is-dob-notequal', t('validation.equelDate'), function (value) {
-      return !dayjs(value).isSame(dayjs(), 'day');
-    })
+    dob: Yup.date()
+      .required(t('validation.required'))
+      .test('is-dob-notequal', t('validation.equelDate'), function (value) {
+        return !dayjs(value).isSame(dayjs(), 'day');
+      }),
+    image: Yup.mixed(),
   });
 
   const formInputs = [
@@ -53,12 +58,23 @@ export default function PersonalForm({ submitForm, formData }: IProps) {
 
   const {
     formState: { errors },
+    setValue,
     control,
     handleSubmit,
   } = useForm({
     defaultValues: formData,
     resolver: yupResolver(validationSchema),
   });
+
+  const handleIconClick = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setValue('image', e.target.files?.[0]);
+  };
 
   return (
     <form id="signupForm" onSubmit={handleSubmit(submitForm)} style={formStyle}>
@@ -110,26 +126,23 @@ export default function PersonalForm({ submitForm, formData }: IProps) {
           name={'dob'}
           control={control}
           render={({ field }) => (
-            // <FormControl>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  {...field}
-                  // sx={{ '.MuiInputBase-input': { p: '8.5px 14px' } }}
-                  views={['year', 'month', 'day']}
-                  maxDate={dayjs().subtract(1, 'day')}
-                  label={t('signup.dob')}
-                  value={dayjs(field.value)}
-                  onChange={(newValue) => {
-                    field.onChange(dayjs(newValue)); // Ensure newValue is converted to Dayjs
-                  }}
-                  slotProps={{
-                    textField: {
-                      helperText: errors.dob?.message,
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-             
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                {...field}
+                views={['year', 'month', 'day']}
+                maxDate={dayjs().subtract(1, 'day')}
+                label={t('signup.dob')}
+                value={dayjs(field.value)}
+                onChange={(newValue) => {
+                  field.onChange(dayjs(newValue)); // Ensure newValue is converted to Dayjs
+                }}
+                slotProps={{
+                  textField: {
+                    helperText: errors.dob?.message,
+                  },
+                }}
+              />
+            </LocalizationProvider>
           )}
         />
       </Box>
@@ -138,10 +151,21 @@ export default function PersonalForm({ submitForm, formData }: IProps) {
           border: '1px solid rgba(0, 0, 0, 0.23)',
           borderRadius: '20px',
           display: 'grid',
+          gap: '16px',
           placeItems: 'center',
+          alignContent: 'center',
         }}
       >
+        <input
+          ref={inputRef}
+          style={{ display: 'none' }}
+          type="file"
+          onChange={handleImageChange}
+        />
         <AddAPhotoIcon sx={{ width: '100px', height: '100px' }} />
+        <Button variant="outlined" onClick={handleIconClick}>
+          Upload photo
+        </Button>
       </Box>
     </form>
   );

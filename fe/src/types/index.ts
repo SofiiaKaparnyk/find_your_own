@@ -29,6 +29,7 @@ export interface ISignupData<T = Date> {
   dob: T;
   longitude: number;
   latitude: number;
+  image: File | '';
 }
 
 export interface ILoginData {

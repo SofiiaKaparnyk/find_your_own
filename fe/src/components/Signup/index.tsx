@@ -42,6 +42,7 @@ const defaultValues: ISignupData = {
   dob: new Date(),
   longitude: 0,
   latitude: 0,
+  image: '',
 };
 
 export default function SignUp() {

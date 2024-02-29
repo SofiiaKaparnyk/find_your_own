@@ -47,3 +47,10 @@ body {
   position: absolute;
   bottom: -20px;
 }
+
+.leaflet-marker-icon {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgb(204, 204, 204);
+  box-shadow: rgb(52 50 50) 3px 3px 15px;
+}

@@ -44,7 +44,7 @@ const resources = {
         back: 'Back',
         question: 'Already have an account?',
         warning:
-          "Click on the map to show a marker at the detected location. Your location is in the center of the blue area. You can move the marker so that it doesn't point to your exact location, but you stay in the blue area.",
+          "Click on the map and move the marker so you stay in the blue area.",
         step1: 'Email and password',
         step2: 'Personal data',
         step3: 'Your approximate location',
@@ -89,7 +89,7 @@ const resources = {
         back: 'Назад',
         question: 'Вже маєте обліковий запис?',
         warning:
-          'Клацніть на карті, щоб показати маркер на виявленому місці. Ваше місцезнаходження знаходиться в центрі синьої зони. Ви можете перемістити маркер, щоб він не вказував на ваше точне місцезнаходження, але ви залишаєтесь у синій області.',
+          'Клацніть на карті і перемістіть маркер, щоб залишатися у синій області.',
         step1: 'Email та пароль',
         step2: 'Персональні дані',
         step3: 'Ваша приблизна локація',
