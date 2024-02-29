@@ -25,7 +25,7 @@ const menu = [
 
 export default function UserAvatar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const { logOut, isAuthenticated } = useAuth();
+  const { logOut, isAuthenticated, user } = useAuth();
   // const { t } = useTranslation();
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
@@ -43,9 +43,9 @@ export default function UserAvatar() {
 
   return (
     <Box sx={{ flexGrow: 0 }}>
-      <Tooltip title="Open profile menu">
+      <Tooltip title={user?.email || ''}>
         <IconButton onClick={isAuthenticated ? handleOpenUserMenu : () => {}} sx={{ p: 0 }}>
-          <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
+          <Avatar sx={{ border: '2px solid #ccc' }} alt="User Avatar" src={user ? `http://127.0.0.1:8000${user.image}` : ''} />
         </IconButton>
       </Tooltip>
       {isAuthenticated && <Menu

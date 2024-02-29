@@ -1,13 +1,15 @@
 import { useContext, createContext, PropsWithChildren, useState, useEffect } from 'react';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { IBackEndError, ILoginData, ISignupData } from 'types';
+import { IBackEndError, ILoginData, ISignupData, IUserProfile } from 'types';
 import { SubmitHandler } from 'react-hook-form';
 import AxiosService from '../utils/axios';
+import { Endpoints } from '../constants';
 
 interface IDefaultValue {
   isAuthenticated: boolean;
   isLoaded: boolean;
+  user: IUserProfile | undefined;
   register: SubmitHandler<ISignupData<string>>;
   logIn: SubmitHandler<ILoginData>;
   logOut: () => void;
@@ -20,6 +22,7 @@ interface ILoginResponse {
 const defaultValue: IDefaultValue = {
   isAuthenticated: false,
   isLoaded: false,
+  user: undefined,
   register: () => {},
   logIn: () => {},
   logOut: () => {},
@@ -29,6 +32,7 @@ const AuthContext = createContext(defaultValue);
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [isAuthenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState<IUserProfile>();
   const [isLoaded, setLoaded] = useState(false);
   const navigate = useNavigate();
 
@@ -42,7 +46,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         setAuthenticated(true);
       } else if(refreshToken) {
         AxiosService.getAxiosInstance()
-          .post('/users/token/refresh/', { refresh: refreshToken })
+          .post(Endpoints.REFRESH_TOKEN, { refresh: refreshToken })
           .then((response) => {
             if (response.status === 200) {
               AxiosService.setToken(response.data.access, response.data.refresh);
@@ -61,10 +65,28 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     checkAuthorization().finally(() => setLoaded(true));
   }, []);
 
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const data = await AxiosService.getAxiosInstance().get<IUserProfile>(Endpoints.USER_PROFILE);
+
+        if (data.status === 200) {
+          setUser(data.data);
+        }
+      } catch (err) {
+        console.log((err as AxiosError<IBackEndError>).response?.data.errors[0].detail);
+      }
+    };
+    if(isAuthenticated) {
+      getUser();
+    }
+
+  }, [isAuthenticated]);
+
   const logIn: SubmitHandler<ILoginData> = async (data) => {
     try {
       const response = await AxiosService.getAxiosInstance().post<ILoginResponse>(
-        '/users/token/',
+        Endpoints.LOGIN,
         data
       );
 
@@ -84,7 +106,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const register: SubmitHandler<ISignupData<string>> = async (data) => {
     try {
       const response = await AxiosService.getAxiosInstance().post<ISignupData>(
-        '/users/register/',
+        Endpoints.REGISTER,
         data,
         {
           headers: {
@@ -106,7 +128,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const logOut = async () => {
     const refreshToken = localStorage.getItem('refresh_token') || '';
     try {
-      await AxiosService.getAxiosInstance().post('/users/logout/', {
+      await AxiosService.getAxiosInstance().post(Endpoints.LOGOUT, {
         refresh_token: refreshToken,
       });
 
@@ -118,7 +140,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const value = { isAuthenticated, isLoaded, register, logIn, logOut };
+  const value = { isAuthenticated, isLoaded, user, register, logIn, logOut };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 

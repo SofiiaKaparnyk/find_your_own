@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   MapContainer,
   TileLayer,
@@ -11,7 +11,8 @@ import L from 'leaflet';
 import AxiosService from 'utils/axios';
 import { AxiosError } from 'axios';
 import { IUser, IBackEndError } from 'types';
-import { Avatar, ListItem, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
+import { Avatar, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Endpoints } from '../constants';
 
 const VancouverCenter = { lat: 49.17863933718509, lng: -122.78459033434748 };
 
@@ -21,7 +22,7 @@ export default function Map() {
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const data = await AxiosService.getAxiosInstance().get<IUser[]>('/users/');
+        const data = await AxiosService.getAxiosInstance().get<IUser[]>(Endpoints.USERS);
 
         if (data.status === 200) {
           setUsers(data.data);
@@ -99,13 +100,6 @@ function LocationMarker({
   );
 
   return position === null ? null : (
-    // <Circle
-    //   center={position}
-    //   pathOptions={{ fillColor: 'blue', color: '' }}
-    //   radius={800}
-    // >
-    //   <Tooltip>You are somewhere here</Tooltip>
-    // </Circle>
     <>
       <Circle
         center={position}
@@ -126,19 +120,18 @@ function LocationMarker({
           ref={markerRef}
         >
           <Popup offset={[-35, -70]}>
-              <ListItem>
-                <ListItemIcon>
-                  <Avatar src={user.image} />
-                </ListItemIcon>
-                <ListItemText primary={`${user.first_name} ${user.last_name}`} />
-              </ListItem>
-              
+            <ListItem>
+              <ListItemIcon>
+                <Avatar src={user.image} />
+              </ListItemIcon>
+              <ListItemText primary={`${user.first_name} ${user.last_name}`} />
+            </ListItem>
+
             {user.description && <ListItemText>{user.description}</ListItemText>}
             <ListItemText>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore dicta ex
-            veniam, nesciunt ab consequuntur repellendus? Consequatur a velit nisi omnis
-            repellat. Quae, molestiae voluptate?
-
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore dicta ex
+              veniam, nesciunt ab consequuntur repellendus? Consequatur a velit nisi omnis
+              repellat. Quae, molestiae voluptate?
             </ListItemText>
           </Popup>
         </Marker>
