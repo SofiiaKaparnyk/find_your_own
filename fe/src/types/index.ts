@@ -1,8 +1,11 @@
-export default interface IUser {
-  password: string;
-  email: string;
+export interface IUser {
+  id: number;
   first_name: string;
   last_name: string;
+  description: null | string;
+  longitude: number;
+  latitude: number;
+  image: string;
 }
 
 export interface IBEError {

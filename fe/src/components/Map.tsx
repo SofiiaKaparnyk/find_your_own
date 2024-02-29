@@ -10,29 +10,29 @@ import {
 import L from 'leaflet';
 import AxiosService from 'utils/axios';
 import { AxiosError } from 'axios';
-import { IBackEndError } from 'types';
+import { IUser, IBackEndError } from 'types';
+import { Avatar, ListItem, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 
 const VancouverCenter = { lat: 49.17863933718509, lng: -122.78459033434748 };
 
-
 export default function Map() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
 
   useEffect(() => {
     const getUsers = async () => {
-      try{
-        const data = await AxiosService.getAxiosInstance().get('/users/');
+      try {
+        const data = await AxiosService.getAxiosInstance().get<IUser[]>('/users/');
 
-        if(data.status === 200) {
-          setUsers(data.data)
+        if (data.status === 200) {
+          setUsers(data.data);
         }
       } catch (err) {
-        console.log((err as AxiosError<IBackEndError>).response?.data.errors[0].detail)
+        console.log((err as AxiosError<IBackEndError>).response?.data.errors[0].detail);
       }
-    }
+    };
 
     getUsers();
-  }, [])
+  }, []);
 
   return (
     <MapContainer
@@ -45,34 +45,41 @@ export default function Map() {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {
-        users.map((user: any) => {
-          return (
-            <LocationMarker key={user.id} userPosition={{ lat: user.latitude, lng: user.longitude }} img={user.image} />
-
-          )
-        })
-      }
+      {users.map((user: any) => {
+        return (
+          <LocationMarker
+            key={user.id}
+            userPosition={{ lat: user.latitude, lng: user.longitude }}
+            user={user}
+          />
+        );
+      })}
     </MapContainer>
   );
 }
 
-function LocationMarker({ userPosition, img }: { userPosition: typeof VancouverCenter, img: string }) {
+function LocationMarker({
+  userPosition,
+  user,
+}: {
+  userPosition: typeof VancouverCenter;
+  user: IUser;
+}) {
   const [position, setPosition] = useState(userPosition);
   const markerRef = useRef<null | any>(null);
   const circleRef = useRef<null | any>(null);
 
   const icon = new L.Icon({
-    iconUrl: img, // Specify the path to your icon image
-    iconSize: [60, 60], // Size of the icon
-    iconAnchor: [30, 30], // Point of the icon which will correspond to marker's location
-    popupAnchor: [30, 30], // Point from which the popup should open relative to the iconAnchor
+    iconUrl: user.image, // Specify the path to your icon image
+    iconSize: [70, 70], // Size of the icon
+    iconAnchor: [35, 35], // Point of the icon which will correspond to marker's location
+    popupAnchor: [35, 35], // Point from which the popup should open relative to the iconAnchor
   });
 
   const map = useMapEvents({
-    click() {
-      map.locate();
-    },
+    // click() {
+    //   map.locate();
+    // },
     locationfound(e) {
       setPosition(e.latlng);
       map.flyTo(e.latlng, map.getZoom());
@@ -117,10 +124,24 @@ function LocationMarker({ userPosition, img }: { userPosition: typeof VancouverC
           eventHandlers={eventHandlers}
           position={position}
           ref={markerRef}
-        ></Marker>
-        <Popup>You are somewhere here
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore dicta ex veniam, nesciunt ab consequuntur repellendus? Consequatur a velit nisi omnis repellat. Quae, molestiae voluptate?
-        </Popup>
+        >
+          <Popup offset={[-35, -70]}>
+              <ListItem>
+                <ListItemIcon>
+                  <Avatar src={user.image} />
+                </ListItemIcon>
+                <ListItemText primary={`${user.first_name} ${user.last_name}`} />
+              </ListItem>
+              
+            {user.description && <ListItemText>{user.description}</ListItemText>}
+            <ListItemText>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore dicta ex
+            veniam, nesciunt ab consequuntur repellendus? Consequatur a velit nisi omnis
+            repellat. Quae, molestiae voluptate?
+
+            </ListItemText>
+          </Popup>
+        </Marker>
       </Circle>
     </>
   );
