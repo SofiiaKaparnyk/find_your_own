@@ -1,4 +1,4 @@
-import { MapOptions } from 'leaflet';
+import { LatLngBoundsExpression, MapOptions } from 'leaflet';
 import React, { PropsWithChildren } from 'react';
 import {
   MapContainer as MainContainer,
@@ -7,21 +7,23 @@ import {
 
 
 const VancouverCenter = { lat: 49.17863933718509, lng: -122.78459033434748 };
+const maxBounds: LatLngBoundsExpression = [ [-72.712, 198.227], [83.774, -175.125] ];
 
-export default function MapContainer({ children, style, options }: PropsWithChildren<{options?: MapOptions, style?: React.CSSProperties}>) {
+export default function MapContainer(props: PropsWithChildren<MapOptions & { style?: React.CSSProperties }>) {
   return (
     <MainContainer
       center={VancouverCenter}
       zoom={12}
+      minZoom={2}
+      maxBounds={maxBounds}
       scrollWheelZoom={true}
-      style={{ width: '100%', height: '100%', minHeight: '300px', zIndex: 0, ...style  }}
-      {...options}
+      {...props}
+      style={{ width: '100%', height: '100%', minHeight: '300px', zIndex: 0, ...props.style }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      { children }
+      { props.children }
     </MainContainer>
   );
 }

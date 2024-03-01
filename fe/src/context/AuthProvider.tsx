@@ -121,7 +121,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         throw new Error(response.statusText);
       }
     } catch (error) {
-      console.error((error as AxiosError<IBackEndError>).response?.data.type);
+      console.error((error as AxiosError<IBackEndError>).response?.data.errors[0].detail);
     }
   };
 

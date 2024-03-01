@@ -1,7 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Alert, FormHelperText } from '@mui/material';
 import {
-  MapContainer,
   TileLayer,
   Popup,
   useMapEvents,
@@ -13,6 +12,7 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ISignupData } from 'types';
 import { useTranslation } from 'react-i18next';
+import MapContainer from 'components/MapContainer';
 
 const VancouverCenter = { lat: 49.17863933718509, lng: -122.78459033434748 };
 
@@ -47,13 +47,10 @@ export default function Map({ submitForm }: IProps) {
     >
       <Alert sx={{ mb: 2 }} severity="warning">{t('signup.warning')}</Alert>
       <MapContainer
-        center={VancouverCenter}
-        zoom={13}
-        scrollWheelZoom={true}
-        style={{ height: '100%', minHeight: '250px', zIndex: 0, width: '100%' }}
+        style={{ minHeight: '250px' }}
+        zoom={10}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <LocationMarker setValue={setValue} />

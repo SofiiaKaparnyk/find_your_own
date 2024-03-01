@@ -48,11 +48,25 @@ body {
   bottom: -20px;
 }
 
+/*  Leaflet styles */
+
+.leaflet-layer {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+.leaflet-control-attribution.leaflet-control {
+  display: none;
+}
+
 .leaflet-marker-icon {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid rgb(204, 204, 204);
   box-shadow: rgb(52 50 50) 3px 3px 15px;
+}
+
+#signupForm .leaflet-marker-icon {
+  border: none;
 }
 
 .leaflet-container > .leaflet-control-container .leaflet-control-zoom {

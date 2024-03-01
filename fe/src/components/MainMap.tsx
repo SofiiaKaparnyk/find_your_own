@@ -69,8 +69,19 @@ function LocationMarker({
 
   const map = useMapEvents({
     // click() {
-    //   map.locate();
+    //   console.log(map.getCenter());
     // },
+    zoomend() {
+      const swamp: HTMLImageElement | null = document.querySelector('[src="https://b.tile.openstreetmap.org/4/12/4.png"]') 
+      const swampB: HTMLImageElement | null = document.querySelector('[src="https://c.tile.openstreetmap.org/3/6/2.png"]') 
+
+      if(swamp) {
+        swamp.src = `/swamp.png`;
+      }
+      if(swampB) {
+        swampB.src = `/swampB.png`;
+      }
+    },
     locationfound(e) {
       setPosition(e.latlng);
       map.flyTo(e.latlng, map.getZoom());
@@ -91,6 +102,7 @@ function LocationMarker({
 
   return position === null ? null : (
     <>
+    
       <Circle
         center={position}
         pathOptions={{ fillColor: 'blue', color: '' }}
