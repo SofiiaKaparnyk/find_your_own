@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
-// import './axiosInterceptor';
+import handleError from './errorHandler';
+import { Endpoints } from '../constants';
 
 export const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8000';
 
@@ -37,26 +38,23 @@ let refresh = false;
 AxiosService.getAxiosInstance().interceptors.response.use(
   (resp) => resp,
   async (error) => {
-    if (error.response.status === 401 && !refresh) {
+    const refresh_token = localStorage.getItem('refresh_token');
+    if (error.response.status === 401 && !refresh && refresh_token) {
       refresh = true;
 
-      const response = await AxiosService.getAxiosInstance().post(
-        '/users/token/refresh/',
-        { refresh: localStorage.getItem('refresh_token') }
-        // {
-        //   headers: { 'Content-Type': 'application/json' },
-        //   withCredentials: true
-        // },
-      );
-
-      if (response.status === 200) {
-        AxiosService.getAxiosInstance().defaults.headers.common.Authorization = `Bearer ${response.data.access}`;
-        localStorage.setItem('access_token', response.data.access);
-        localStorage.setItem('refresh_token', response.data.refresh);
-        return axios(error.config);
-      }
+      AxiosService.getAxiosInstance()
+        .post(Endpoints.REFRESH_TOKEN, { refresh: refresh_token })
+        .then((res: any) => {
+          if (res.statusText === 'OK') {
+            AxiosService.getAxiosInstance().defaults.headers.common.Authorization = `Bearer ${res.data.access}`;
+            localStorage.setItem('access_token', res.data.access);
+            localStorage.setItem('refresh_token', res.data.refresh);
+            return axios(error.config);
+          }
+        })
+        .catch(handleError);
     }
     refresh = false;
-    // return error;
+    return Promise.reject(error);
   }
 );

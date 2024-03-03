@@ -8,6 +8,7 @@ import {
   StepLabel,
   Stepper,
   Typography,
+  colors,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +18,7 @@ import { useAuth } from 'context/AuthProvider';
 import Map from './Map';
 import MainForm from './MainForm';
 import PersonalForm from './PersonalForm';
-import mapImg from 'assets/mapb.png';
+// import mapImg from 'assets/mapb.png';
 import { ISignupData } from 'types';
 
 const formStyle: Record<string | number, string & {}> = {
@@ -80,16 +81,16 @@ export default function SignUp() {
         minWidth: '100%',
         height: '100%',
         padding: 3,
-        background: {
-          xs: `
-            linear-gradient(0deg, transparent 0%, #22346a 100%),
-            url(${mapImg}) left bottom / cover no-repeat
-          `,
-          md: `
-            linear-gradient(0deg, transparent 0%, #22346a 100%),
-            url(${mapImg}) left bottom / cover no-repeat
-          `,
-        },
+        // background: {
+        //   xs: `
+        //     linear-gradient(0deg, transparent 0%, var(--lightBlue) 100%),
+        //     url(${mapImg}) left bottom / cover no-repeat
+        //   `,
+        //   md: `
+        //     linear-gradient(0deg, transparent 0%, var(--lightBlue) 100%),
+        //     url(${mapImg}) left bottom / cover no-repeat
+        //   `,
+        // },
       }}
     >
       <Box style={formStyle}>
@@ -120,7 +121,7 @@ export default function SignUp() {
             variant="contained"
             disabled={activeStep === 0}
             onClick={handleBack}
-            sx={{ background: 'var(--darkBlue)', mr: 1 }}
+            sx={{ mr: 1 }}
           >
             {t('signup.back')}
           </Button>
@@ -130,14 +131,13 @@ export default function SignUp() {
             form="signupForm"
             type="submit"
             variant="contained"
-            sx={{ background: 'var(--darkBlue)' }}
           >
             {t('signup.submit')}
           </Button>
         </Box>
 
-        <Typography variant="body2">
-          {t('signup.question')} <Link to="/login">{t('login.title')}</Link>
+        <Typography variant="body2" >
+          {t('signup.question')} <Link to="/login" style={{ color: colors.blue[700] }}>{t('login.title')}</Link>
         </Typography>
       </Box>
     </Container>

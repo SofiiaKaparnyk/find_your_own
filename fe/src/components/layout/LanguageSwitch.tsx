@@ -31,11 +31,18 @@ export default function LanguageSwitch() {
   return (
     <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
       <img src={t('header.flag')} alt="" width={24} style={{ marginRight: 8 }} />
-      <IconButton onClick={handleOpenLngMenu} sx={{ color: 'white' }}>
+      <IconButton
+        onClick={handleOpenLngMenu}
+        sx={{
+          color: 'white',
+        }}
+      >
         <LanguageIcon />
       </IconButton>
       <Menu
-        sx={{ mt: '45px' }}
+        sx={{ mt: '45px', '.MuiPaper-root': {
+          color: 'var(--darkBlue)',
+        }, }}
         id="language-menu-appbar"
         anchorEl={anchorElLng}
         anchorOrigin={{

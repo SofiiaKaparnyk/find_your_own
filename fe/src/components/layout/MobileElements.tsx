@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Box, IconButton, Typography, Menu, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
 interface Props {
@@ -10,8 +9,6 @@ interface Props {
 
 export default function MobileEl({ pages }: Props) {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-
-  const { t } = useTranslation();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -56,11 +53,8 @@ export default function MobileEl({ pages }: Props) {
           sx={{
             display: { xs: 'block', md: 'none' },
             '& .MuiPaper-root': {
-              background: 'var(--darkBlue)',
-            },
-            '& ul': {
-              color: 'white',
-            },
+              color: 'var(--darkBlue)',
+            }
           }}
         >
           {pages.map((page) => (
@@ -70,7 +64,7 @@ export default function MobileEl({ pages }: Props) {
               style={({ isActive }) => {
                 return {
                   textDecoration: 'none',
-                  color: isActive ? 'yellow' : 'white',
+                  color: isActive ? 'yellow' : 'inherit',
                 };
               }}
             >

@@ -8,6 +8,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  colors,
 } from '@mui/material';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -162,7 +163,7 @@ export default function PersonalForm({ submitForm, formData }: IProps) {
           type="file"
           onChange={handleImageChange}
         />
-        <AddAPhotoIcon sx={{ width: '100px', height: '100px' }} />
+        <AddAPhotoIcon sx={{ color: colors.blue[700], width: '100px', height: '100px' }} />
         <Button variant="outlined" onClick={handleIconClick}>
           Upload photo
         </Button>

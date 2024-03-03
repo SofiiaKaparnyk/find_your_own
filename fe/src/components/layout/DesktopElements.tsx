@@ -56,7 +56,7 @@ export default function DesktopEl({ pages }: Props) {
               {page.title}
             </Button>
           </NavLink>
-        ))}
+        ))}       
       </Box>
     </>
   );

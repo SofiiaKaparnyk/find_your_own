@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, TextField } from '@mui/material';
+import { Box, TextField, colors } from '@mui/material';
 import LockPersonIcon from '@mui/icons-material/LockPerson';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
@@ -73,7 +73,7 @@ export default function MainForm({ submitForm, formData }: IProps) {
         })}
       </Box>
       <Box sx={{ display: { xs: 'none', md: 'grid' }, placeItems: 'center' }}>
-        <LockPersonIcon sx={{ maxWidth: '200px', maxHeight: '200px', width: '100%', height: '100%' }} />
+        <LockPersonIcon sx={{ color: colors.blue[700], maxWidth: '200px', maxHeight: '200px', width: '100%', height: '100%' }} />
       </Box>
     </form>
   );
@@ -97,7 +97,6 @@ function ControlledInput({ name, type, label, control, errors }: ICProps) {
           {...field}
           id={`${name}-input`}
           type={type}
-          // size="small"
           label={label}
           error={!!errors[name]?.message}
           helperText={errors[name]?.message as string}

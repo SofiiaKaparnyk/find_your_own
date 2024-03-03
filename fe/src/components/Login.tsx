@@ -1,12 +1,12 @@
 import React from 'react';
-import { Button, Container, TextField, Typography } from '@mui/material';
+import { Button, Container, TextField, Typography, colors } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
 import { useAuth } from 'context/AuthProvider';
-import mapImg from 'assets/mapb.png';
+// import mapImg from 'assets/mapb.png';
 
 
 
@@ -43,16 +43,16 @@ export default function LogIn() {
         minWidth: '100%',
         height: '100%',
         padding: 3,
-        background: {
-          xs: `
-            linear-gradient(0deg, transparent 0%, #22346a 100%),
-            url(${mapImg}) left bottom / cover no-repeat
-          `,
-          md: `
-            linear-gradient(0deg, transparent 0%, #22346a 100%),
-            url(${mapImg}) left bottom / cover no-repeat
-          `,
-        },
+        // background: {
+        //   xs: `
+        //     linear-gradient(0deg, transparent 0%, #22346a 100%),
+        //     url(${mapImg}) left bottom / cover no-repeat
+        //   `,
+        //   md: `
+        //     linear-gradient(0deg, transparent 0%, #22346a 100%),
+        //     url(${mapImg}) left bottom / cover no-repeat
+        //   `,
+        // },
       }}
     >
       <form
@@ -108,13 +108,13 @@ export default function LogIn() {
           type="submit"
           fullWidth
           variant="contained"
-          sx={{ background: 'var(--darkBlue)', mt: 2 }}
+          sx={{ mt: 2 }}
         >
           {t('login.submit')}
         </Button>
 
         <Typography variant="body2">
-          {t('login.question')} <Link to="/signup">{t('signup.title')}</Link>
+          {t('login.question')} <Link style={{ color: colors.blue[700] }} to="/signup">{t('signup.title')}</Link>
         </Typography>
       </form>
     </Container>

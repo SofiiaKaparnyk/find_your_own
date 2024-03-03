@@ -1,17 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Popup,
-  useMapEvents,
-  Circle,
-  Marker,
-} from 'react-leaflet';
+import { Popup, useMapEvents, Circle, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import AxiosService from 'utils/axios';
-import { AxiosError } from 'axios';
 import { Avatar, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { Endpoints } from '../constants';
 import MapContainer from './MapContainer';
-import { IUser, IBackEndError } from 'types';
+import { IUser } from 'types';
+import handleError from 'utils/errorHandler';
 
 const VancouverCenter = { lat: 49.17863933718509, lng: -122.78459033434748 };
 
@@ -20,15 +15,14 @@ export default function MainMap() {
 
   useEffect(() => {
     const getUsers = async () => {
-      try {
-        const data = await AxiosService.getAxiosInstance().get<IUser[]>(Endpoints.USERS);
-
-        if (data.status === 200) {
-          setUsers(data.data);
-        }
-      } catch (err) {
-        console.log((err as AxiosError<IBackEndError>).response?.data.errors[0].detail);
-      }
+      AxiosService.getAxiosInstance()
+        .get<IUser[]>(Endpoints.USERS)
+        .then(res => {
+          if (res.statusText === 'OK') {
+            setUsers(res.data);
+          }
+        })
+        .catch(handleError);
     };
 
     getUsers();
@@ -72,13 +66,17 @@ function LocationMarker({
     //   console.log(map.getCenter());
     // },
     zoomend() {
-      const swamp: HTMLImageElement | null = document.querySelector('[src="https://b.tile.openstreetmap.org/4/12/4.png"]') 
-      const swampB: HTMLImageElement | null = document.querySelector('[src="https://c.tile.openstreetmap.org/3/6/2.png"]') 
+      const swamp: HTMLImageElement | null = document.querySelector(
+        '[src="https://b.tile.openstreetmap.org/4/12/4.png"]'
+      );
+      const swampB: HTMLImageElement | null = document.querySelector(
+        '[src="https://c.tile.openstreetmap.org/3/6/2.png"]'
+      );
 
-      if(swamp) {
+      if (swamp) {
         swamp.src = `/swamp.png`;
       }
-      if(swampB) {
+      if (swampB) {
         swampB.src = `/swampB.png`;
       }
     },
@@ -102,7 +100,6 @@ function LocationMarker({
 
   return position === null ? null : (
     <>
-    
       <Circle
         center={position}
         pathOptions={{ fillColor: 'blue', color: '' }}

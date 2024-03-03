@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Container, Typography } from '@mui/material';
-import mapImg from 'assets/mapb.png';
-import waveImg from 'assets/waveb.svg';
+// import mapImg from 'assets/mapb.png';
+// import waveImg from 'assets/waveb.svg';
 import { useTranslation } from 'react-i18next';
 
 export default function Hero() {
@@ -13,17 +13,17 @@ export default function Hero() {
         minWidth: '100%',
         height: '100%',
         padding: 3,
-        background: {
-          xs: `
-            var(--gradient),
-            url(${waveImg}) -150px -20vh / cover no-repeat,
-            url(${mapImg}) left bottom / cover no-repeat`,
-          md: `
-          var(--gradient),
-            url(${waveImg}) left -20vh / cover no-repeat,
-            url(${mapImg}) left bottom / cover no-repeat
-          `,
-        },
+        // background: {
+        //   xs: `
+        //     var(--gradient),
+        //     url(${waveImg}) -150px -20vh / cover no-repeat,
+        //     url(${mapImg}) left bottom / cover no-repeat`,
+        //   md: `
+        //   var(--gradient),
+        //     url(${waveImg}) left -20vh / cover no-repeat,
+        //     url(${mapImg}) left bottom / cover no-repeat
+        //   `,
+        // },
         isolation: 'isolate',
       }}
     >
