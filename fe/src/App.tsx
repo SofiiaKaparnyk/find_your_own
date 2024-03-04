@@ -6,11 +6,11 @@ import Hero from './components/Hero';
 import SignUp from 'components/Signup';
 import LogIn from 'components/Login';
 import Home from 'components/Home';
+import Account from 'components/Account';
+import PrivateRoute from 'components/PrivateRoute';
 import AuthProvider from 'context/AuthProvider';
 import './i18n';
 import './App.css';
-import PrivateRoute from 'components/PrivateRoute';
-import Account from 'components/Account';
 
 function App() {
   return (
@@ -26,7 +26,6 @@ function App() {
                 <Route path="map" element={<Home />} />
                 <Route path="account" element={<Account />} />
               </Route>
-              {/* <Route path="about" element={<SignUp />} /> */}
             </Route>
           </Routes>
         </AuthProvider>

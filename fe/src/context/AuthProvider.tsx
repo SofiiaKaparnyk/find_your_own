@@ -1,7 +1,7 @@
 import { useContext, createContext, PropsWithChildren, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler } from 'react-hook-form';
-import AxiosService from '../utils/axios';
+import { axiosInstance, refreshAccessToken } from '../utils/axios';
 import { Endpoints } from '../constants';
 import { ILoginData, ISignupData, IUserProfile } from 'types';
 import handleError from '../utils/errorHandler';
@@ -42,18 +42,11 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       const refreshToken = localStorage.getItem('refresh_token');
 
       if (accessToken && refreshToken) {
-        AxiosService.setToken(accessToken, refreshToken);
+        axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+
         setAuthenticated(true);
       } else if (refreshToken) {
-        AxiosService.getAxiosInstance()
-          .post<ILoginResponse>(Endpoints.REFRESH_TOKEN, { refresh: refreshToken })
-          .then(res => {
-            if (res.statusText === 'OK') {
-              AxiosService.setToken(res.data.access, res.data.refresh);
-              setAuthenticated(true);
-            }
-          })
-          .catch(handleError);
+        refreshAccessToken();
       } else {
         setAuthenticated(false);
       }
@@ -64,10 +57,12 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     const getUser = async () => {
-      AxiosService.getAxiosInstance()
-        .get<IUserProfile>(Endpoints.USER_PROFILE)
-        .then(res => {
-          setUser(res.data);
+      axiosInstance.get<IUserProfile>(Endpoints.USER_PROFILE)
+        .then((res) => {
+          console.log("getUser", res)
+          if(res?.statusText === 'OK') {
+            setUser(res.data);
+          }
         })
         .catch(handleError);
     };
@@ -78,11 +73,14 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   }, [isAuthenticated]);
 
   const logIn: SubmitHandler<ILoginData> = async (data) => {
-    AxiosService.getAxiosInstance()
+    axiosInstance
       .post<ILoginResponse>(Endpoints.LOGIN, data)
-      .then(res => {
+      .then((res) => {
         if (res.statusText === 'OK') {
-          AxiosService.setToken(res.data.access, res.data.refresh);
+          axiosInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access}`;
+          localStorage.setItem('access_token', res.data.access);
+          localStorage.setItem('refresh_token', res.data.refresh);
+
           setAuthenticated(true);
           navigate('/map');
         }
@@ -91,13 +89,13 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const register: SubmitHandler<ISignupData<string>> = async (data) => {
-    AxiosService.getAxiosInstance()
+    axiosInstance
       .post<ISignupData>(Endpoints.REGISTER, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
-      .then(res => {
+      .then((res) => {
         if (res.statusText === 'OK') {
           logIn({ email: res.data.email, password: res.data.password });
         }
@@ -107,12 +105,14 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const logOut = async () => {
     const refreshToken = localStorage.getItem('refresh_token') || '';
-    AxiosService.getAxiosInstance()
+    axiosInstance
       .post(Endpoints.LOGOUT, {
         refresh_token: refreshToken,
       })
       .then(() => {
-        AxiosService.removeToken();
+        axiosInstance.defaults.headers.common.Authorization = null;
+        localStorage.clear();
+
         setAuthenticated(false);
         navigate('/');
       })

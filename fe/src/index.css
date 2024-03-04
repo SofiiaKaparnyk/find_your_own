@@ -12,7 +12,7 @@
 }
 
 body {
-  height: 100dvh;
+  min-height: 100dvh;
   /* overflow: hidden; */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -22,9 +22,12 @@ body {
 }
 
 #root {
+  position: relative;
+  min-height: inherit;
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-attachment: fixed;
   background-image: repeating-linear-gradient(315deg, #00ffff2e 92%, #073aff00 100%),
     repeating-radial-gradient(75% 75% at 238% 218%, #00ffff12 30%, #073aff14 39%),
     radial-gradient(99% 99% at 109% 2%, #1976d2 0%, #073aff00 100%),
@@ -113,4 +116,22 @@ body {
   .leaflet-control-zoom
   > a.leaflet-control-zoom-out:hover {
   transform: scale(1.03);
+}
+
+/* Scroll bar */
+
+/* width */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--lightBlue);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: white;
 }

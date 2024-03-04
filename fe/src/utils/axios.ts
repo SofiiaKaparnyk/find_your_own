@@ -1,60 +1,83 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import handleError from './errorHandler';
 import { Endpoints } from '../constants';
 
 export const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8000';
 
-export default class AxiosService {
-  static token: string | undefined;
+export const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+});
 
-  private static _axiosInstance: AxiosInstance = axios.create({
-    baseURL: API_BASE_URL,
-  });
-
-  static setToken(access: string, refresh: string) {
-    this.token = access;
-    this._axiosInstance.defaults.headers.common.Authorization = `Bearer ${access}`;
-    localStorage.setItem('access_token', access);
-    localStorage.setItem('refresh_token', refresh);
-  }
-
-  static removeToken() {
-    this.token = '';
-    this._axiosInstance.defaults.headers.common.Authorization = null;
-    localStorage.clear();
-  }
-
-  static getToken() {
-    return this.token;
-  }
-
-  static getAxiosInstance(): AxiosInstance {
-    return AxiosService._axiosInstance;
-  }
+interface ILoginResponse {
+  refresh: string;
+  access: string;
 }
 
+export const refreshAccessToken = async () => {
+  const refresh_token = localStorage.getItem('refresh_token');
+
+  return axiosInstance
+    .post<ILoginResponse>(Endpoints.REFRESH_TOKEN, { refresh: refresh_token })
+    .then((res) => {
+      if (res.statusText === 'OK') {
+        axiosInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access}`;
+        localStorage.setItem('access_token', res.data.access);
+        localStorage.setItem('refresh_token', res.data.refresh);
+
+        return res.data.access;
+      }
+    })
+    .catch(handleError);
+};
+
 let refresh = false;
+let requestQueue: any[] = [];
 
-AxiosService.getAxiosInstance().interceptors.response.use(
+const callRequestsFromQueue = (token: string) => {
+  requestQueue.forEach((callback: (token: string) => void) => callback(token));
+};
+const addRequestToQueue = (callback: (token: string) => void) => {
+  requestQueue.push(callback);
+};
+const clearQueue = () => {
+  requestQueue = [];
+};
+
+axiosInstance.interceptors.response.use(
   (resp) => resp,
-  async (error) => {
-    const refresh_token = localStorage.getItem('refresh_token');
-    if (error.response.status === 401 && !refresh && refresh_token) {
-      refresh = true;
+  async (error: AxiosError) => {
+    const { response, config: sourceConfig } = error;
 
-      AxiosService.getAxiosInstance()
-        .post(Endpoints.REFRESH_TOKEN, { refresh: refresh_token })
-        .then((res: any) => {
-          if (res.statusText === 'OK') {
-            AxiosService.getAxiosInstance().defaults.headers.common.Authorization = `Bearer ${res.data.access}`;
-            localStorage.setItem('access_token', res.data.access);
-            localStorage.setItem('refresh_token', res.data.refresh);
-            return axios(error.config);
-          }
-        })
-        .catch(handleError);
+    if (response?.status === 401) {
+      if (!refresh) {
+        refresh = true;
+
+        refreshAccessToken()
+          .then((access_token) => {
+            refresh = false;
+            callRequestsFromQueue(access_token as string);
+            clearQueue();
+          })
+          .catch((err) => {
+            refresh = false;
+            clearQueue();
+            handleError(err);
+          });
+      }
+
+      const retryRequest = new Promise((resolve) => {
+        // we push new function to queue
+        addRequestToQueue((token: string) => {
+          // function takes one param 'token'
+          (sourceConfig as InternalAxiosRequestConfig).headers.Authorization = `Bearer ${token}`; // set token to header
+          resolve(axios((sourceConfig as InternalAxiosRequestConfig))); // and resolve promise with axios request by old config with new token
+          // we resolve exactly axios request - NOT axiosInstance request cause it could call recursion
+        });
+      });
+
+      return retryRequest;
+    } else {
+      return Promise.reject(error);
     }
-    refresh = false;
-    return Promise.reject(error);
   }
 );

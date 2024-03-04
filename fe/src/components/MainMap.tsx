@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Popup, useMapEvents, Circle, Marker } from 'react-leaflet';
 import L from 'leaflet';
-import AxiosService from 'utils/axios';
+import { axiosInstance } from 'utils/axios';
 import { Avatar, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { Endpoints } from '../constants';
 import MapContainer from './MapContainer';
@@ -15,8 +15,7 @@ export default function MainMap() {
 
   useEffect(() => {
     const getUsers = async () => {
-      AxiosService.getAxiosInstance()
-        .get<IUser[]>(Endpoints.USERS)
+      axiosInstance.get<IUser[]>(Endpoints.USERS)
         .then(res => {
           if (res.statusText === 'OK') {
             setUsers(res.data);
@@ -29,7 +28,7 @@ export default function MainMap() {
   }, []);
 
   return (
-    <MapContainer>
+    <MapContainer style={{ height: 'calc(100dvh - var(--headerHeight))' }}>
       {users.map((user: any) => {
         return (
           <LocationMarker
