@@ -36,6 +36,58 @@ body {
     radial-gradient(160% 154% at 711px -303px, #2000ffff 0%, #073affff 100%);
 }
 
+
+/* Google maps controls  */
+
+.my_location_button {
+  background: white;
+  color: #666;
+  position: relative;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+  border-radius: 2px;
+  width: 40px;
+  height: 40px;
+  right: 10px;
+}
+
+.seach_place_inpit {
+  background: rgb(255, 255, 255);
+  padding: 0px 17px;
+  border: none;
+  outline: none;
+  position: relative;
+  top: 10px;
+  cursor: pointer;
+  overflow: hidden;
+  height: 40px;
+  vertical-align: middle;
+  color: rgb(86, 86, 86);
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 18px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+  width: 300px;
+}
+
+.my_location_button:hover {
+  color: black;
+}
+
+.custom_marker {
+  width: 70px;
+  height: 70px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
 /* .MuiFormControl-root .MuiInputLabel-root.Mui-focused {
   color: var(--darkBlue);
 }
@@ -58,10 +110,6 @@ body {
 }
 
 /*  Leaflet styles */
-
-/* .leaflet-layer {
-  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-} */
 
 .leaflet-control-attribution.leaflet-control {
   display: none;

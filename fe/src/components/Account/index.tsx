@@ -6,7 +6,7 @@ import { Endpoints } from 'constants/index';
 import handleError from 'utils/errorHandler';
 
 export default function Account() {
-  const [events, setEvents] = useState([1]);
+  const [events, setEvents] = useState([1, 2]);
   const [expandedIndex, setExpanded] = useState(-1);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export default function Account() {
       //     }
       //   })
       //   .catch(handleError);
-      setEvents([])
+      // setEvents([])
     };
 
     getEvents();

@@ -59,7 +59,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     const getUser = async () => {
       axiosInstance.get<IUserProfile>(Endpoints.USER_PROFILE)
         .then((res) => {
-          console.log("getUser", res)
           if(res?.statusText === 'OK') {
             setUser(res.data);
           }
@@ -96,7 +95,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         },
       })
       .then((res) => {
-        if (res.statusText === 'OK') {
+        if (res.statusText === 'Created') {
           logIn({ email: res.data.email, password: res.data.password });
         }
       })

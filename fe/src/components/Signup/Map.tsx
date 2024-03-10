@@ -1,20 +1,29 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { Alert, FormHelperText } from '@mui/material';
-import {
-  TileLayer,
-  Popup,
-  useMapEvents,
-  Circle,
-  Marker,
-} from 'react-leaflet';
+import React, { useEffect, useState } from 'react';
+import { Alert, FormHelperText, colors } from '@mui/material';
 import { SubmitHandler, UseFormSetValue, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ISignupData } from 'types';
 import { useTranslation } from 'react-i18next';
-import MapContainer from 'components/MapContainer';
+import MapContainer from 'components/map/MapContainer';
+import { AdvancedMarker } from '@vis.gl/react-google-maps';
+import { Circle } from 'components/map/Circle';
+import { MyLocationControl } from 'components/map/MyLocation';
+import { PlaceAutocompleteControl } from 'components/map/Autocomplete';
 
-const VancouverCenter = { lat: 49.17863933718509, lng: -122.78459033434748 };
+
+const circleOptions = {
+  strokeColor: colors.blue[700],
+  strokeOpacity: 0.8,
+  strokeWeight: 1,
+  fillColor: colors.blue[700],
+  fillOpacity: 0.35,
+  clickable: false,
+  draggable: true,
+  editable: false,
+  visible: true,
+  radius: 1000, // 1000 метрів
+};
 
 interface IProps {
   submitForm: SubmitHandler<Partial<ISignupData>>;
@@ -45,14 +54,10 @@ export default function Map({ submitForm }: IProps) {
       onSubmit={handleSubmit(submitForm)}
       style={{ marginBottom: '14px', position: 'relative' }}
     >
-      <Alert sx={{ mb: 2 }} severity="warning">{t('signup.warning')}</Alert>
-      <MapContainer
-        style={{ minHeight: '250px' }}
-        zoom={10}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+      <Alert sx={{ mb: 2 }} severity="warning">
+        {t('signup.warning')}
+      </Alert>
+      <MapContainer style={{ minHeight: '350px' }} zoom={10}>
         <LocationMarker setValue={setValue} />
       </MapContainer>
       <FormHelperText error>
@@ -70,54 +75,47 @@ function LocationMarker({
     latitude: number;
   }>;
 }) {
-  const [position, setPosition] = useState<typeof VancouverCenter | null>(null);
-  const markerRef = useRef<null | any>(null);
-  const circleRef = useRef<null | any>(null);
-
-  const map = useMapEvents({
-    click() {
-      map.locate();
-    },
-    locationfound(e) {
-      setPosition(e.latlng);
-      setValue('longitude', e.latlng.lng);
-      setValue('latitude', e.latlng.lat);
-      map.flyTo(e.latlng, map.getZoom(), { duration: 2 });
-    },
-  });
-
-  const eventHandlers = useMemo(
-    () => ({
-      drag() {
-        const marker = markerRef.current;
-        if (marker !== null) {
-          const latlng = marker.getLatLng();
-          setPosition(latlng);
-          setValue('longitude', latlng.lng);
-          setValue('latitude', latlng.lat);
-        }
-      },
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+  const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(
+    null
+  );
+  const [circlePosition, setCirclePosition] = useState<google.maps.LatLngLiteral | null>(
+    null
   );
 
-  return position === null ? null : (
+  useEffect(() => {
+    if(!markerPosition) return;
+    setValue('latitude', markerPosition.lat);
+    setValue('longitude', markerPosition.lng);
+  }, [markerPosition, setValue])
+
+  return (
     <>
-      <Circle
-        center={position}
-        pathOptions={{ fillColor: 'blue', color: '' }}
-        radius={800}
-        ref={circleRef}
-      >
-        <Marker
-          draggable={true}
-          eventHandlers={eventHandlers}
-          position={position}
-          ref={markerRef}
-        ></Marker>
-        <Popup>You are somewhere here</Popup>
-      </Circle>
+      {markerPosition && (
+        <>
+          <AdvancedMarker
+            position={markerPosition}
+            draggable
+            onDrag={(e: google.maps.MapMouseEvent) => {
+              if (e.latLng) {
+                const newPosition = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+                setMarkerPosition(newPosition);
+                setCirclePosition(newPosition);
+              }
+            }}
+          ></AdvancedMarker>
+          <Circle {...circleOptions} center={circlePosition} />
+        </>
+      )}
+      <MyLocationControl
+        onLocationFound={(position) => {
+          setMarkerPosition(position);
+          setCirclePosition(position);
+        }}
+      />
+      <PlaceAutocompleteControl onPlaceFound={(position) => {
+          setMarkerPosition(position);
+          setCirclePosition(position);
+        }} />
     </>
   );
 }

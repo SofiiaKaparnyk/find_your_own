@@ -1,22 +1,44 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Popup, useMapEvents, Circle, Marker } from 'react-leaflet';
-import L from 'leaflet';
+import React, { useEffect, useRef, useState } from 'react';
 import { axiosInstance } from 'utils/axios';
-import { Avatar, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Avatar, ListItem, ListItemIcon, ListItemText, colors } from '@mui/material';
 import { Endpoints } from '../constants';
-import MapContainer from './MapContainer';
+import MapContainer from './map/MapContainer';
 import { IUser } from 'types';
 import handleError from 'utils/errorHandler';
+import { AdvancedMarker, InfoWindow, useMap } from '@vis.gl/react-google-maps';
+import { Circle } from './map/Circle';
+import {
+  // Cluster,
+  // ClusterStats,
+  Marker,
+  MarkerClusterer,
+} from '@googlemaps/markerclusterer';
+import { useAuth } from 'context/AuthProvider';
+// import * as d3 from 'd3';
 
-const VancouverCenter = { lat: 49.17863933718509, lng: -122.78459033434748 };
+const circleOptions = {
+  strokeColor: colors.blue[700],
+  strokeOpacity: 0.8,
+  strokeWeight: 1,
+  fillColor: colors.blue[700],
+  fillOpacity: 0.35,
+  clickable: false,
+  draggable: true,
+  editable: false,
+  visible: true,
+  radius: 1000, // 1000 meters
+};
 
 export default function MainMap() {
   const [users, setUsers] = useState<IUser[]>([]);
+  const [infoWindowIndex, setInfoWindowIndex] = useState(-1);
+  const { user } = useAuth();
 
   useEffect(() => {
     const getUsers = async () => {
-      axiosInstance.get<IUser[]>(Endpoints.USERS)
-        .then(res => {
+      axiosInstance
+        .get<IUser[]>(Endpoints.USERS)
+        .then((res) => {
           if (res.statusText === 'OK') {
             setUsers(res.data);
           }
@@ -28,112 +50,152 @@ export default function MainMap() {
   }, []);
 
   return (
-    <MapContainer style={{ height: 'calc(100dvh - var(--headerHeight))' }}>
-      {users.map((user: any) => {
-        return (
-          <LocationMarker
-            key={user.id}
-            userPosition={{ lat: user.latitude, lng: user.longitude }}
-            user={user}
-          />
-        );
-      })}
+    <MapContainer style={{ height: 'calc(100dvh - var(--headerHeight))' }} defaultCenter={user ? {lat: user?.latitude, lng: user?.longitude} : undefined} zoom={10}>
+      <UserMarkers
+        users={users}
+        infoWindowIndex={infoWindowIndex}
+        setInfoWindowIndex={setInfoWindowIndex}
+      />
     </MapContainer>
   );
 }
 
-function LocationMarker({
-  userPosition,
-  user,
-}: {
-  userPosition: typeof VancouverCenter;
-  user: IUser;
-}) {
-  const [position, setPosition] = useState(userPosition);
-  const markerRef = useRef<null | any>(null);
-  const circleRef = useRef<null | any>(null);
+interface IProps {
+  users: IUser[];
+  infoWindowIndex: number;
+  setInfoWindowIndex: (index: number) => void;
+}
 
-  const icon = new L.Icon({
-    iconUrl: user.image, // Specify the path to your icon image
-    iconSize: [70, 70], // Size of the icon
-    iconAnchor: [35, 35], // Point of the icon which will correspond to marker's location
-    popupAnchor: [35, 35], // Point from which the popup should open relative to the iconAnchor
-  });
+function UserMarkers({ users, infoWindowIndex, setInfoWindowIndex }: IProps) {
+  const map = useMap();
+  // const [markers, setMarkers] = useState<Marker[]>([]);
+  const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
+  const clusterer = useRef<MarkerClusterer | null>(null);
 
-  const map = useMapEvents({
-    // click() {
-    //   console.log(map.getCenter());
-    // },
-    zoomend() {
-      const swamp: HTMLImageElement | null = document.querySelector(
-        '[src="https://b.tile.openstreetmap.org/4/12/4.png"]'
-      );
-      const swampB: HTMLImageElement | null = document.querySelector(
-        '[src="https://c.tile.openstreetmap.org/3/6/2.png"]'
-      );
+  // Initialize MarkerClusterer
+  useEffect(() => {
+    if (!map) return;
+    if (!clusterer.current) {
+      clusterer.current = new MarkerClusterer({
+        // map,
+        // renderer: { render: renderFn },
+      });
+    }
+  }, [map]);
 
-      if (swamp) {
-        swamp.src = `/swamp.png`;
+  // // Update markers
+  useEffect(() => {
+    clusterer.current?.clearMarkers();
+    clusterer.current?.addMarkers(Object.values(markers));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [markers.length]);
+
+  const setMarkerRef = (marker: Marker | null, key: number) => {
+    if (marker && markers[key]) return;
+    if (!marker && !markers[key]) return;
+
+    setMarkers((prev) => {
+      if (marker) {
+        return { ...prev, [key]: marker };
+      } else {
+        const newMarkers = { ...prev };
+        delete newMarkers[key];
+        return newMarkers;
       }
-      if (swampB) {
-        swampB.src = `/swampB.png`;
-      }
-    },
-    locationfound(e) {
-      setPosition(e.latlng);
-      map.flyTo(e.latlng, map.getZoom());
-    },
-  });
+    });
+  };
 
-  const eventHandlers = useMemo(
-    () => ({
-      drag() {
-        const marker = markerRef.current;
-        if (marker !== null) {
-          setPosition(marker.getLatLng());
-        }
-      },
-    }),
-    []
-  );
-
-  return position === null ? null : (
+  return (
     <>
-      <Circle
-        center={position}
-        pathOptions={{ fillColor: 'blue', color: '' }}
-        radius={800}
-        ref={circleRef}
-        eventHandlers={{
-          click() {
-            console.log(circleRef.current);
-          },
-        }}
-      >
-        <Marker
-          icon={icon}
-          draggable={true}
-          eventHandlers={eventHandlers}
-          position={position}
-          ref={markerRef}
-        >
-          <Popup offset={[-35, -70]}>
-            <ListItem>
-              <ListItemIcon>
-                <Avatar src={user.image} />
-              </ListItemIcon>
-              <ListItemText primary={`${user.first_name} ${user.last_name}`} />
-            </ListItem>
+      {users.map((user, index) => {
+        const userPosition = { lat: user.latitude, lng: user.longitude };
 
-            {user.description && <ListItemText>{user.description}</ListItemText>}
-            <ListItemText>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore dicta ex
-              veniam, nesciunt ab consequuntur repellendus? Consequatur a velit nisi omnis
-              repellat. Quae, molestiae voluptate?
-            </ListItemText>
-          </Popup>
-        </Marker>
-      </Circle>
+        return (
+          <React.Fragment key={user.id}>
+            <AdvancedMarker
+              ref={(marker) => setMarkerRef(marker, user.id)}
+              position={userPosition}
+              onClick={() => {
+                setInfoWindowIndex(index);
+              }}
+            >
+              {user.image ? (
+                <div
+                  className="custom_marker"
+                  style={{
+                    background: `url(${user.image}) center / cover no-repeat, #c1c1c1`,
+                  }}
+                />
+              ) : (
+                <Avatar
+                  sx={{
+                    width: '70px',
+                    height: '70px',
+                    position: 'absolute',
+                    top: '0',
+                    left: '0',
+                    border: '2px solid #fff',
+                    borderRadius: '50%',
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                />
+              )}
+            </AdvancedMarker>
+            <Circle {...circleOptions} center={userPosition} />
+
+            {infoWindowIndex === index && (
+              <InfoWindow
+                position={userPosition}
+                onCloseClick={() => {
+                  setInfoWindowIndex(-1);
+                }}
+                maxWidth={300}
+              >
+                <ListItem>
+                  <ListItemIcon>
+                    <Avatar src={user.image} />
+                  </ListItemIcon>
+                  <ListItemText primary={`${user.first_name} ${user.last_name}`} />
+                </ListItem>
+
+                {user.description && <ListItemText>{user.description}</ListItemText>}
+                <ListItemText>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore dicta ex
+                  veniam, nesciunt ab consequuntur repellendus? Consequatur a velit nisi
+                  omnis repellat. Quae, molestiae voluptate?
+                </ListItemText>
+              </InfoWindow>
+            )}
+          </React.Fragment>
+        );
+      })}
     </>
   );
-}
+};
+
+// function renderFn({ count, position }: Cluster, stats: ClusterStats) {
+//   // use d3-interpolateRgb to interpolate between red and blue
+//   const color = d3.interpolateRgb('green', 'red')(count / stats.clusters.markers.max);
+
+//   // create svg url with fill color
+//   const svg = window.btoa(`
+//     <svg fill="${color}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+//       <circle cx="120" cy="120" opacity=".8" r="70" />    
+//     </svg>
+//     `);
+//   // create marker using svg icon
+//   return new google.maps.Marker({
+//     position,
+//     icon: {
+//       url: `data:image/svg+xml;base64,${svg}`,
+//       scaledSize: new google.maps.Size(75, 75),
+//     },
+//     label: {
+//       text: String(count),
+//       color: 'rgba(255,255,255,0.9)',
+//       fontSize: '12px',
+//     },
+//     // adjust zIndex to be above other markers
+//     zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count,
+//   });
+// };
