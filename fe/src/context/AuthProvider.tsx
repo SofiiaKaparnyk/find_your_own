@@ -38,15 +38,20 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     const checkAuthorization = async () => {
-      const accessToken = localStorage.getItem('access_token');
       const refreshToken = localStorage.getItem('refresh_token');
 
-      if (accessToken && refreshToken) {
-        axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-
-        setAuthenticated(true);
-      } else if (refreshToken) {
-        refreshAccessToken();
+      if (refreshToken) {
+        refreshAccessToken()
+          .then((access_token) => {
+            if(access_token) {
+              setAuthenticated(true);
+            }
+          })
+          .catch((err) => {
+            handleError(err);
+            setAuthenticated(false);
+          });
+        
       } else {
         setAuthenticated(false);
       }
