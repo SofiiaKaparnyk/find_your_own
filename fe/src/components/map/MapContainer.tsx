@@ -20,11 +20,12 @@ const apiKey = process.env.REACT_APP_MAPS_API_KEY || '';
 const mapId = process.env.REACT_APP_MAP_ID || '';
 
 export default function MapContainer(
-  props: PropsWithChildren<google.maps.MapOptions & { style?: React.CSSProperties, defaultCenter?: google.maps.LatLngLiteral }>
+  props: PropsWithChildren<google.maps.MapOptions & { style?: React.CSSProperties, defaultCenter?: google.maps.LatLngLiteral, onClick?: (e: any) => void }>
 ) {
   return (
     <APIProvider apiKey={apiKey}>
       <Map
+        onClick={props.onClick}
         minZoom={3}
         defaultCenter={props.defaultCenter || VancouverCenter}
         defaultZoom={10}

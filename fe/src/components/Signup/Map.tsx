@@ -3,7 +3,7 @@ import { Alert, FormHelperText, colors } from '@mui/material';
 import { SubmitHandler, UseFormSetValue, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ISignupData } from 'types';
+import { ISignupData } from 'types/users';
 import { useTranslation } from 'react-i18next';
 import MapContainer from 'components/map/MapContainer';
 import { AdvancedMarker } from '@vis.gl/react-google-maps';

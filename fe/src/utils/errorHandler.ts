@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { enqueueSnackbar } from "notistack";
-import { IBackEndError } from "types";
+import { IBackEndError } from "types/users";
 
 export default function handleError(err: AxiosError<IBackEndError>) {
   if(Array.isArray(err.response?.data.errors)) {

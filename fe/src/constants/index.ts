@@ -6,4 +6,5 @@ export enum Endpoints {
   'LOGOUT' = '/users/logout/',
   'REFRESH_TOKEN' = '/users/token/refresh/',
   'EVENTS' = '/events/',
+  'EVENT' = '/events/event/',
 };

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { SubmitHandler } from 'react-hook-form';
 import { axiosInstance, refreshAccessToken } from '../utils/axios';
 import { Endpoints } from '../constants';
-import { ILoginData, ISignupData, IUserProfile } from 'types';
+import { ILoginData, ISignupData, IUserProfile } from 'types/users';
 import handleError from '../utils/errorHandler';
 
 interface IDefaultValue {
