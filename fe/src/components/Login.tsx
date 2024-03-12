@@ -41,7 +41,7 @@ export default function LogIn() {
         placeItems: 'center',
         position: 'relative',
         minWidth: '100%',
-        height: '100%',
+        height: 'var(--containerHeight)',
         padding: 3,
         // background: {
         //   xs: `

@@ -1,20 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { axiosInstance } from 'utils/axios';
-import { Avatar, ListItem, ListItemIcon, ListItemText, colors } from '@mui/material';
-import { Endpoints } from '../constants';
-import MapContainer from './map/MapContainer';
-import { IUser } from 'types';
-import handleError from 'utils/errorHandler';
+import {
+  Avatar,
+  CardContent,
+  CardHeader,
+  ListItemText,
+  Typography,
+  colors,
+} from '@mui/material';
 import { AdvancedMarker, InfoWindow, useMap } from '@vis.gl/react-google-maps';
-import { Circle } from './map/Circle';
 import {
   // Cluster,
   // ClusterStats,
   Marker,
   MarkerClusterer,
 } from '@googlemaps/markerclusterer';
-import { useAuth } from 'context/AuthProvider';
-// import * as d3 from 'd3';
+import { Circle } from '../map/Circle';
+import { IUser } from 'types/users';
 
 const circleOptions = {
   strokeColor: colors.blue[700],
@@ -29,46 +30,14 @@ const circleOptions = {
   radius: 1000, // 1000 meters
 };
 
-export default function MainMap() {
-  const [users, setUsers] = useState<IUser[]>([]);
-  const [infoWindowIndex, setInfoWindowIndex] = useState(-1);
-  const { user } = useAuth();
-
-  useEffect(() => {
-    const getUsers = async () => {
-      axiosInstance
-        .get<IUser[]>(Endpoints.USERS)
-        .then((res) => {
-          if (res.statusText === 'OK') {
-            setUsers(res.data);
-          }
-        })
-        .catch(handleError);
-    };
-
-    getUsers();
-  }, []);
-
-  return (
-    <MapContainer style={{ height: 'calc(100dvh - var(--headerHeight))' }} defaultCenter={user ? {lat: user?.latitude, lng: user?.longitude} : undefined} zoom={10}>
-      <UserMarkers
-        users={users}
-        infoWindowIndex={infoWindowIndex}
-        setInfoWindowIndex={setInfoWindowIndex}
-      />
-    </MapContainer>
-  );
-}
-
-interface IProps {
+interface IUserProps {
   users: IUser[];
   infoWindowIndex: number;
   setInfoWindowIndex: (index: number) => void;
 }
 
-function UserMarkers({ users, infoWindowIndex, setInfoWindowIndex }: IProps) {
+export default function UserMarkers({ users, infoWindowIndex, setInfoWindowIndex }: IUserProps) {
   const map = useMap();
-  // const [markers, setMarkers] = useState<Marker[]>([]);
   const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
   const clusterer = useRef<MarkerClusterer | null>(null);
 
@@ -77,7 +46,7 @@ function UserMarkers({ users, infoWindowIndex, setInfoWindowIndex }: IProps) {
     if (!map) return;
     if (!clusterer.current) {
       clusterer.current = new MarkerClusterer({
-        // map,
+        map,
         // renderer: { render: renderFn },
       });
     }
@@ -151,19 +120,20 @@ function UserMarkers({ users, infoWindowIndex, setInfoWindowIndex }: IProps) {
                 }}
                 maxWidth={300}
               >
-                <ListItem>
-                  <ListItemIcon>
-                    <Avatar src={user.image} />
-                  </ListItemIcon>
-                  <ListItemText primary={`${user.first_name} ${user.last_name}`} />
-                </ListItem>
+                <CardHeader
+                  avatar={<Avatar src={user.image} />}
+                  title={`${user.first_name} ${user.last_name}`}
+                  // subheader={event.date}
+                />
 
                 {user.description && <ListItemText>{user.description}</ListItemText>}
-                <ListItemText>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore dicta ex
-                  veniam, nesciunt ab consequuntur repellendus? Consequatur a velit nisi
-                  omnis repellat. Quae, molestiae voluptate?
-                </ListItemText>
+                <CardContent>
+                  <Typography>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore dicta
+                    ex veniam, nesciunt ab consequuntur repellendus? Consequatur a velit
+                    nisi omnis repellat. Quae, molestiae voluptate?
+                  </Typography>
+                </CardContent>
               </InfoWindow>
             )}
           </React.Fragment>
@@ -171,7 +141,7 @@ function UserMarkers({ users, infoWindowIndex, setInfoWindowIndex }: IProps) {
       })}
     </>
   );
-};
+}
 
 // function renderFn({ count, position }: Cluster, stats: ClusterStats) {
 //   // use d3-interpolateRgb to interpolate between red and blue
@@ -180,7 +150,7 @@ function UserMarkers({ users, infoWindowIndex, setInfoWindowIndex }: IProps) {
 //   // create svg url with fill color
 //   const svg = window.btoa(`
 //     <svg fill="${color}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
-//       <circle cx="120" cy="120" opacity=".8" r="70" />    
+//       <circle cx="120" cy="120" opacity=".8" r="70" />
 //     </svg>
 //     `);
 //   // create marker using svg icon

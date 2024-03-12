@@ -9,6 +9,7 @@
   --lightBlue: #1976d2;
   --gradient: linear-gradient(0deg, transparent 0%, var(--darkBlue) 100%);
   --headerHeight: 70px;
+  --containerHeight: calc(100dvh - var(--headerHeight));
 }
 
 body {
@@ -175,11 +176,11 @@ body {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: var(--lightBlue);
+  background: white;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background: white;
+  background: var(--lightBlue);
 }

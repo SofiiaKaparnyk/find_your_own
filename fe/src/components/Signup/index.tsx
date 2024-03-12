@@ -19,7 +19,7 @@ import Map from './Map';
 import MainForm from './MainForm';
 import PersonalForm from './PersonalForm';
 // import mapImg from 'assets/mapb.png';
-import { ISignupData } from 'types';
+import { ISignupData } from 'types/users';
 
 const formStyle: Record<string | number, string & {}> = {
   background: 'white',
@@ -79,7 +79,7 @@ export default function SignUp() {
         placeItems: 'center',
         position: 'relative',
         minWidth: '100%',
-        height: '100%',
+        height: 'var(--containerHeight)',
         padding: 3,
         // background: {
         //   xs: `
