@@ -1,9 +1,7 @@
 import { useContext, createContext, PropsWithChildren, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler } from 'react-hook-form';
-import { refreshAccessToken } from '../utils/axios';
 import { IUserProfile } from 'types/users';
-import handleError from '../utils/errorHandler';
 import { getUserProfile, logIn, logOut, register } from 'services';
 import { ILoginData, ISignupData } from 'types/auth';
 

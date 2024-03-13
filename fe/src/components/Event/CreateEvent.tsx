@@ -10,29 +10,25 @@ import {
   Typography,
   colors,
 } from '@mui/material';
-import {
-  DateTimePicker,
-  LocalizationProvider,
-} from '@mui/x-date-pickers';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
-import { Controller, FieldErrors, UseFormSetValue, useForm } from 'react-hook-form';
+import { Controller, FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { AdvancedMarker } from '@vis.gl/react-google-maps';
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-
-
 import { useTranslation } from 'react-i18next';
+import { enqueueSnackbar } from 'notistack';
+
 import MapContainer from 'components/map/MapContainer';
+import LocationMarker from 'components/map/LocationMarker';
 import { MyLocationControl } from 'components/map/MyLocation';
 import { PlaceAutocompleteControl } from 'components/map/Autocomplete';
 import { useAuth } from 'context/AuthProvider';
-import { IEvent } from 'types/events';
-import { enqueueSnackbar } from 'notistack';
 import { createEvent, updateEvent } from 'services';
+import { IEvent } from 'types/events';
 
 dayjs.extend(utc);
 
@@ -53,16 +49,15 @@ const defaultValues: Omit<IEvent<Date>, 'user' | 'id'> = {
 };
 
 export default function CreateEvent({ editMode }: { editMode?: boolean }) {
+  const event: unknown = useLoaderData();
+  const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | undefined>(editMode ?  {
+    lat: (event as IEvent<Date>).latitude,
+    lng: (event as IEvent<Date>).longitude,
+  } : undefined);
   const { user } = useAuth();
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const loaderData = useLoaderData();
   const navigate = useNavigate();
-
-  const { event } =
-    editMode && loaderData
-      ? (loaderData as unknown as { event: IEvent<Date> })
-      : { event: null };
 
   const validationSchema = Yup.object({
     title: Yup.string().required(t('validation.required')),
@@ -86,9 +81,15 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
     handleSubmit,
     setValue,
   } = useForm({
-    defaultValues: editMode ? event! : defaultValues,
+    defaultValues: editMode ? (event as IEvent<Date>)! : defaultValues,
     resolver: yupResolver(validationSchema),
   });
+
+  useEffect(() => {
+    if (!markerPosition) return;
+    setValue('latitude', markerPosition.lat);
+    setValue('longitude', markerPosition.lng);
+  }, [markerPosition, setValue]);
 
   const formInputs = [
     { name: 'title', label: t('event_creation.title'), type: 'text' },
@@ -126,9 +127,13 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
           navigate('/account');
           enqueueSnackbar('Event created successfully', { variant: 'success' });
         }
-      })
+      });
     }
   };
+
+  const setNewPosition = (position: google.maps.LatLngLiteral) => {
+    setMarkerPosition(position);
+  }
 
   return (
     <Container
@@ -229,25 +234,22 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
               defaultCenter={
                 editMode
                   ? {
-                      lat: event!.latitude,
-                      lng: event!.longitude,
+                      lat: (event as IEvent<Date>).latitude,
+                      lng: (event as IEvent<Date>).longitude,
                     }
                   : undefined
               }
-              onClick={(e) => {
-                console.log(e.detail.latLng);
-              }}
+              onClick={setNewPosition}
             >
               <LocationMarker
-                setValue={setValue as UseFormSetValue<Partial<IEvent<Date>>>}
-                coord={
-                  editMode
-                    ? {
-                        lat: event!.latitude,
-                        lng: event!.longitude,
-                      }
-                    : null
-                }
+                coords={markerPosition}
+                onPositionChange={setNewPosition}
+              />
+              <MyLocationControl
+                onLocationFound={setNewPosition}
+              />
+              <PlaceAutocompleteControl
+                onPlaceFound={setNewPosition}
               />
             </MapContainer>
             <FormHelperText error>
@@ -294,52 +296,5 @@ function ControlledInput({ name, type, label, control, errors }: ICProps) {
         />
       )}
     />
-  );
-}
-
-function LocationMarker({
-  setValue,
-  coord,
-}: {
-  setValue: UseFormSetValue<Partial<IEvent<Date>>>;
-  coord: null | google.maps.LatLngLiteral;
-}) {
-  const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(
-    coord
-  );
-
-  useEffect(() => {
-    if (!markerPosition) return;
-    setValue('latitude', markerPosition.lat);
-    setValue('longitude', markerPosition.lng);
-  }, [markerPosition, setValue]);
-
-  return (
-    <>
-      {markerPosition && (
-        <>
-          <AdvancedMarker
-            position={markerPosition}
-            draggable
-            onDrag={(e: google.maps.MapMouseEvent) => {
-              if (e.latLng) {
-                const newPosition = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-                setMarkerPosition(newPosition);
-              }
-            }}
-          ></AdvancedMarker>
-        </>
-      )}
-      <MyLocationControl
-        onLocationFound={(position) => {
-          setMarkerPosition(position);
-        }}
-      />
-      <PlaceAutocompleteControl
-        onPlaceFound={(position) => {
-          setMarkerPosition(position);
-        }}
-      />
-    </>
   );
 }

@@ -3,6 +3,7 @@ import { Button, Container, Paper, Typography } from '@mui/material';
 import EventCard from './EventCard';
 import { Link, useLoaderData } from 'react-router-dom';
 import { IEvent } from 'types/events';
+import { IUserProfile } from 'types/users';
 
 const containerStyles = {
   position: 'relative',
@@ -18,7 +19,8 @@ const containerStyles = {
 
 export default function Account() {
   const [expandedIndex, setExpanded] = useState(-1);
-  const events = useLoaderData();
+  const loaderData = useLoaderData();
+  const { user, events } = loaderData as unknown as { user: IUserProfile; events: IEvent[] };
 
   const handleExpandClick = (index: number) => {
     if (expandedIndex === index) {
@@ -37,12 +39,12 @@ export default function Account() {
         <Typography variant="h5" textAlign="center" sx={{ color: 'var(--lightBlue)' }}>
           My events
         </Typography>
-        {!(events as unknown as IEvent[]).length && (
+        {!(events as IEvent[]).length && (
           <Typography variant="body1" textAlign="center" sx={{ color: 'lightgray' }}>
             No events
           </Typography>
         )}
-        {(events as unknown as IEvent[]).map((event, index) => {
+        {(events as IEvent[]).map((event, index) => {
           return (
             <EventCard
               key={index}

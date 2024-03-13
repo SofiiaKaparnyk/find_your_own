@@ -15,7 +15,7 @@ import PrivateRoute from 'components/PrivateRoute';
 import AuthProvider from 'context/AuthProvider';
 import CreateEvent from 'components/Event/CreateEvent';
 import MainMap from 'components/MainMap';
-import { getEvent, getEvents, getUsers } from 'services';
+import { getEvent, getEvents, getUserProfile, getUsers } from 'services';
 import './i18n';
 import './App.css';
 
@@ -24,7 +24,13 @@ const updateEventLoader = async ({ params }: { params: Params<string>}) => {
 };
 
 const accountLoader = async () => {
-  return getEvents();
+  // return getEvents();
+  const data = await Promise.all([getUserProfile(), getEvents()]);
+
+  return {
+    user: data[0],
+    events: data[1],
+  };
 };
 
 const mapLoader = async () => {

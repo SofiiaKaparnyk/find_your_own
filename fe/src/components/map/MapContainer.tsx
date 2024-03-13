@@ -1,8 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import {
-  APIProvider,
-  Map,
-} from '@vis.gl/react-google-maps';
+import { APIProvider, Map } from '@vis.gl/react-google-maps';
 
 const containerStyle = {
   width: '100%',
@@ -20,12 +17,22 @@ const apiKey = process.env.REACT_APP_MAPS_API_KEY || '';
 const mapId = process.env.REACT_APP_MAP_ID || '';
 
 export default function MapContainer(
-  props: PropsWithChildren<google.maps.MapOptions & { style?: React.CSSProperties, defaultCenter?: google.maps.LatLngLiteral, onClick?: (e: any) => void }>
+  props: PropsWithChildren<
+    google.maps.MapOptions & {
+      style?: React.CSSProperties;
+      defaultCenter?: google.maps.LatLngLiteral;
+      onClick?: (e: any) => void;
+    }
+  >
 ) {
   return (
     <APIProvider apiKey={apiKey}>
       <Map
-        onClick={props.onClick}
+        onClick={(e) => {
+          if (props.onClick) {
+            props.onClick(e.detail.latLng);
+          }
+        }}
         minZoom={3}
         defaultCenter={props.defaultCenter || VancouverCenter}
         defaultZoom={10}
