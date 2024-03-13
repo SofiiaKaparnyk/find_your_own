@@ -16,7 +16,7 @@ export default function MainMap() {
   const [eventWindowIndex, setEventWindowIndex] = useState(-1);
   const { user } = useAuth();
   const loaderData = useLoaderData();
-  const { users, events } = loaderData as unknown as { users: IUser[]; events: IEvent[] };
+  const { users = [], events = [] } = loaderData as unknown as { users: IUser[] | undefined; events: IEvent[] | undefined };
 
   return (
     <MapContainer

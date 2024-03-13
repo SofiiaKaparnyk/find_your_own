@@ -18,7 +18,7 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller, FieldErrors, SubmitHandler } from 'react-hook-form';
 import dayjs from 'dayjs';
-import { ISignupData } from 'types/users';
+import { ISignupData } from 'types/auth';
 
 const formStyle: Record<string | number, string & {}> = {
   display: 'grid',

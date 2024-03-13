@@ -35,7 +35,7 @@ export default function EventCard({ expanded, handleExpandClick, event }: iProps
         <CardMedia
           component="img"
           height="134"
-          image={event.image || vava}
+          image={event.image as string | undefined || vava}
           alt="Paella dish"
         />
         <CardContent>

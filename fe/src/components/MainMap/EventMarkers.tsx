@@ -70,7 +70,7 @@ export default function EventMarkers({ events, eventWindowIndex, setEventWindowI
         return (
           <React.Fragment key={event.id}>
             <AdvancedMarker
-              ref={(marker) => setMarkerRef(marker, event.id)}
+              ref={(marker) => setMarkerRef(marker, event.id as number)}
               position={eventPosition}
               onClick={() => {
                 setEventWindowIndex(index);
@@ -119,7 +119,7 @@ export default function EventMarkers({ events, eventWindowIndex, setEventWindowI
                   <CardMedia
                     component="img"
                     height="134"
-                    image={event.image}
+                    image={event.image as string}
                     alt="Paella dish"
                   />
                 )}

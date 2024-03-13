@@ -1,10 +1,10 @@
-export interface IEvent<T = string> {
-  user: number;
-  id: number;
+export interface IEvent<D = string> {
+  user?: number;
+  id?: number;
   title: string;
   description: string;
-  date: T;
-  image?: string | null;
+  date: D;
+  image?: string | File | null;
   latitude: number;
   longitude: number;
 }

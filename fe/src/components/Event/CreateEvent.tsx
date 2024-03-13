@@ -13,7 +13,6 @@ import {
 import {
   DateTimePicker,
   LocalizationProvider,
-  StaticDateTimePicker,
 } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
@@ -25,9 +24,7 @@ import * as Yup from 'yup';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
-import { axiosInstance } from 'utils/axios';
-import { Endpoints } from 'constants/index';
-import handleError from 'utils/errorHandler';
+
 import { useTranslation } from 'react-i18next';
 import MapContainer from 'components/map/MapContainer';
 import { MyLocationControl } from 'components/map/MyLocation';
@@ -35,6 +32,7 @@ import { PlaceAutocompleteControl } from 'components/map/Autocomplete';
 import { useAuth } from 'context/AuthProvider';
 import { IEvent } from 'types/events';
 import { enqueueSnackbar } from 'notistack';
+import { createEvent, updateEvent } from 'services';
 
 dayjs.extend(utc);
 
@@ -60,7 +58,11 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const loaderData = useLoaderData();
   const navigate = useNavigate();
-  const { event } = editMode ? loaderData as unknown as { event: IEvent<Date>} : { event: null}
+
+  const { event } =
+    editMode && loaderData
+      ? (loaderData as unknown as { event: IEvent<Date> })
+      : { event: null };
 
   const validationSchema = Yup.object({
     title: Yup.string().required(t('validation.required')),
@@ -104,40 +106,27 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
   };
 
   const submitForm = (data: Yup.InferType<typeof validationSchema>) => {
-    const newDate = {
+    const newData = {
       ...data,
       date: dayjs(data.date).format(),
       user: user?.id,
+      image: data.image as File,
     };
 
     if (editMode) {
-      axiosInstance
-        .put(`${Endpoints.EVENT}${event?.id}`, newDate, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .then((res) => {
-          if (res.statusText === 'OK') {
-            navigate('/account');
-            enqueueSnackbar('Event updated successfully', { variant: 'success' });
-          }
-        })
-        .catch(handleError);
+      updateEvent(newData).then((res) => {
+        if (res) {
+          navigate('/account');
+          enqueueSnackbar('Event updated successfully', { variant: 'success' });
+        }
+      });
     } else {
-      axiosInstance
-        .post(Endpoints.EVENT, newDate, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .then((res) => {
-          if (res.statusText === 'Created') {
-            navigate('/account');
-            enqueueSnackbar('Event created successfully', { variant: 'success' });
-          }
-        })
-        .catch(handleError);
+      createEvent(newData).then((res) => {
+        if (res) {
+          navigate('/account');
+          enqueueSnackbar('Event created successfully', { variant: 'success' });
+        }
+      })
     }
   };
 
@@ -237,10 +226,14 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
             </Alert>
             <MapContainer
               zoom={10}
-              defaultCenter={editMode ? {
-                lat: event!.latitude,
-                lng: event!.longitude,
-              } : undefined}
+              defaultCenter={
+                editMode
+                  ? {
+                      lat: event!.latitude,
+                      lng: event!.longitude,
+                    }
+                  : undefined
+              }
               onClick={(e) => {
                 console.log(e.detail.latLng);
               }}
@@ -309,7 +302,7 @@ function LocationMarker({
   coord,
 }: {
   setValue: UseFormSetValue<Partial<IEvent<Date>>>;
-  coord: null | google.maps.LatLngLiteral
+  coord: null | google.maps.LatLngLiteral;
 }) {
   const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(
     coord

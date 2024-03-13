@@ -18,8 +18,7 @@ import { useAuth } from 'context/AuthProvider';
 import Map from './Map';
 import MainForm from './MainForm';
 import PersonalForm from './PersonalForm';
-// import mapImg from 'assets/mapb.png';
-import { ISignupData } from 'types/users';
+import { ISignupData } from 'types/auth';
 
 const formStyle: Record<string | number, string & {}> = {
   background: 'white',
@@ -81,16 +80,6 @@ export default function SignUp() {
         minWidth: '100%',
         height: 'var(--containerHeight)',
         padding: 3,
-        // background: {
-        //   xs: `
-        //     linear-gradient(0deg, transparent 0%, var(--lightBlue) 100%),
-        //     url(${mapImg}) left bottom / cover no-repeat
-        //   `,
-        //   md: `
-        //     linear-gradient(0deg, transparent 0%, var(--lightBlue) 100%),
-        //     url(${mapImg}) left bottom / cover no-repeat
-        //   `,
-        // },
       }}
     >
       <Box style={formStyle}>
