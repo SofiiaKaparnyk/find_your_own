@@ -7,10 +7,8 @@ import * as Yup from 'yup';
 
 import MapContainer from 'components/map/MapContainer';
 import { Circle } from 'components/map/Circle';
-import { MyLocationControl } from 'components/map/MyLocation';
-import { PlaceAutocompleteControl } from 'components/map/Autocomplete';
-import { ISignupData } from 'types/auth';
 import LocationMarker from 'components/map/LocationMarker';
+import { ISignupData } from 'types/auth';
 
 const circleOptions = {
   strokeColor: colors.blue[700],
@@ -76,8 +74,10 @@ export default function Map({ submitForm }: IProps) {
       </Alert>
       <MapContainer
         style={{ minHeight: '350px' }}
-        zoom={10}
         onClick={setNewPosition}
+        onLocationFound={setNewPosition}
+        useGetLocation={true}
+        useSearch={true}
       >
         {markerPosition && circlePosition && (
           <>
@@ -88,12 +88,6 @@ export default function Map({ submitForm }: IProps) {
             <Circle {...circleOptions} center={circlePosition} />
           </>
         )}
-        <MyLocationControl
-          onLocationFound={setNewPosition}
-        />
-        <PlaceAutocompleteControl
-          onPlaceFound={setNewPosition}
-        />
       </MapContainer>
       <FormHelperText error>
         {errors.longitude?.message || errors.latitude?.message}

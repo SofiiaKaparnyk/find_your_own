@@ -3,7 +3,6 @@ import {
   Alert,
   Box,
   Button,
-  Container,
   FormHelperText,
   Paper,
   TextField,
@@ -22,10 +21,9 @@ import utc from 'dayjs/plugin/utc';
 import { useTranslation } from 'react-i18next';
 import { enqueueSnackbar } from 'notistack';
 
+import PageWrapper from 'components/PageWrapper';
 import MapContainer from 'components/map/MapContainer';
 import LocationMarker from 'components/map/LocationMarker';
-import { MyLocationControl } from 'components/map/MyLocation';
-import { PlaceAutocompleteControl } from 'components/map/Autocomplete';
 import { useAuth } from 'context/AuthProvider';
 import { createEvent, updateEvent } from 'services';
 import { IEvent } from 'types/events';
@@ -136,14 +134,7 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
   }
 
   return (
-    <Container
-      sx={{
-        position: 'relative',
-        minWidth: '100%',
-        minHeight: 'var(--containerHeight)',
-        padding: 3,
-      }}
-    >
+    <PageWrapper>
       <Paper sx={{ p: 2, height: '100%' }}>
         <Typography variant="h5" textAlign="center" sx={{ mb: 2 }}>
           {editMode ? 'Edit event' : t('event_creation.header')}
@@ -230,7 +221,6 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
               {t('event_creation.info')}
             </Alert>
             <MapContainer
-              zoom={10}
               defaultCenter={
                 editMode
                   ? {
@@ -240,16 +230,13 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
                   : undefined
               }
               onClick={setNewPosition}
+              onLocationFound={setNewPosition}
+              useGetLocation={true}
+              useSearch={true}
             >
               <LocationMarker
                 coords={markerPosition}
                 onPositionChange={setNewPosition}
-              />
-              <MyLocationControl
-                onLocationFound={setNewPosition}
-              />
-              <PlaceAutocompleteControl
-                onPlaceFound={setNewPosition}
               />
             </MapContainer>
             <FormHelperText error>
@@ -266,7 +253,7 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
           </Button>
         </form>
       </Paper>
-    </Container>
+    </PageWrapper>
   );
 }
 

@@ -22,7 +22,6 @@ export default function MainMap() {
     <MapContainer
       style={{ height: 'var(--containerHeight)' }}
       defaultCenter={user ? { lat: user?.latitude, lng: user?.longitude } : undefined}
-      zoom={10}
     >
       {(filter === 'all' || filter === 'users') && <UserMarkers
         users={users}

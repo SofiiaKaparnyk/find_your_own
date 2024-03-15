@@ -7,11 +7,11 @@ import {
 } from '@vis.gl/react-google-maps';
 
 interface Props {
-  onPlaceFound: (place: google.maps.LatLngLiteral) => void;
+  onPlaceFound?: (place: google.maps.LatLngLiteral) => void;
   position?: ControlPosition;
 }
 
-export const PlaceAutocompleteControl = ({ onPlaceFound, position }: Props) => {
+export const PlaceAutocompleteControl = ({ onPlaceFound = () => {}, position }: Props) => {
   const [placeAutocomplete, setPlaceAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null);
   const [selectedPlace, setSelectedPlace] =
@@ -54,7 +54,7 @@ export const PlaceAutocompleteControl = ({ onPlaceFound, position }: Props) => {
   return (
     <MapControl position={position || ControlPosition.TOP_CENTER}>
       <div className="autocomplete-container">
-        <input ref={inputRef} className="seach_place_inpit" onKeyDown={(e) => {if(e.key === 'Enter') e.stopPropagation()}} />
+        <input ref={inputRef} className="seach_place_input" onKeyDown={(e) => {if(e.key === 'Enter') e.preventDefault()}} />
       </div>
     </MapControl>
   );

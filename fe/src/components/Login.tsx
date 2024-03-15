@@ -1,12 +1,12 @@
 import React from 'react';
-import { Button, Container, TextField, Typography, colors } from '@mui/material';
+import { Button, TextField, Typography, colors } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
 import { useAuth } from 'context/AuthProvider';
-// import mapImg from 'assets/mapb.png';
+import PageWrapper from './PageWrapper';
 
 
 
@@ -35,24 +35,10 @@ export default function LogIn() {
   });
 
   return (
-    <Container
-      sx={{
+    <PageWrapper
+      style={{
         display: 'grid',
         placeItems: 'center',
-        position: 'relative',
-        minWidth: '100%',
-        height: 'var(--containerHeight)',
-        padding: 3,
-        // background: {
-        //   xs: `
-        //     linear-gradient(0deg, transparent 0%, #22346a 100%),
-        //     url(${mapImg}) left bottom / cover no-repeat
-        //   `,
-        //   md: `
-        //     linear-gradient(0deg, transparent 0%, #22346a 100%),
-        //     url(${mapImg}) left bottom / cover no-repeat
-        //   `,
-        // },
       }}
     >
       <form
@@ -117,6 +103,6 @@ export default function LogIn() {
           {t('login.question')} <Link style={{ color: colors.blue[700] }} to="/signup">{t('signup.title')}</Link>
         </Typography>
       </form>
-    </Container>
+    </PageWrapper>
   );
 }

@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Box,
   Button,
-  Container,
   Divider,
   Step,
   StepLabel,
@@ -19,6 +18,7 @@ import Map from './Map';
 import MainForm from './MainForm';
 import PersonalForm from './PersonalForm';
 import { ISignupData } from 'types/auth';
+import PageWrapper from 'components/PageWrapper';
 
 const formStyle: Record<string | number, string & {}> = {
   background: 'white',
@@ -72,14 +72,10 @@ export default function SignUp() {
   };
 
   return (
-    <Container
-      sx={{
+    <PageWrapper
+      style={{
         display: 'grid',
         placeItems: 'center',
-        position: 'relative',
-        minWidth: '100%',
-        height: 'var(--containerHeight)',
-        padding: 3,
       }}
     >
       <Box style={formStyle}>
@@ -129,6 +125,6 @@ export default function SignUp() {
           {t('signup.question')} <Link to="/login" style={{ color: colors.blue[700] }}>{t('login.title')}</Link>
         </Typography>
       </Box>
-    </Container>
+    </PageWrapper>
   );
 }

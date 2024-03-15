@@ -1,5 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import { APIProvider, Map } from '@vis.gl/react-google-maps';
+import { MyLocationControl } from './MyLocation';
+import { PlaceAutocompleteControl } from './Autocomplete';
 
 const containerStyle = {
   width: '100%',
@@ -17,29 +19,46 @@ const apiKey = process.env.REACT_APP_MAPS_API_KEY || '';
 const mapId = process.env.REACT_APP_MAP_ID || '';
 
 export default function MapContainer(
-  props: PropsWithChildren<
-    google.maps.MapOptions & {
-      style?: React.CSSProperties;
-      defaultCenter?: google.maps.LatLngLiteral;
-      onClick?: (e: any) => void;
-    }
-  >
+  props: PropsWithChildren<{
+    mapOptions?: google.maps.MapOptions;
+    style?: React.CSSProperties;
+    defaultCenter?: google.maps.LatLngLiteral;
+    onLocationFound?: (latlng: google.maps.LatLngLiteral) => void;
+    onClick?: (e: any) => void;
+
+    useSearch?: boolean;
+    useGetLocation?: boolean;
+  }>
 ) {
+  const {
+    children,
+    mapOptions,
+    style,
+    defaultCenter,
+    onLocationFound,
+    onClick,
+    useSearch = false,
+    useGetLocation = false,
+  } = props;
   return (
     <APIProvider apiKey={apiKey}>
       <Map
         onClick={(e) => {
-          if (props.onClick) {
-            props.onClick(e.detail.latLng);
+          if (onClick) {
+            onClick(e.detail.latLng);
           }
         }}
         minZoom={3}
-        defaultCenter={props.defaultCenter || VancouverCenter}
+        defaultCenter={defaultCenter || VancouverCenter}
         defaultZoom={10}
         mapId={mapId}
-        style={{ ...containerStyle, ...props.style }}
+        style={{ ...containerStyle, ...style }}
+        {...mapOptions}
       >
-        {props.children}
+        {children}
+
+        {useGetLocation && <MyLocationControl onLocationFound={onLocationFound} />}
+        {useSearch && <PlaceAutocompleteControl onPlaceFound={onLocationFound} />}
       </Map>
     </APIProvider>
   );

@@ -56,7 +56,7 @@ body {
   right: 10px;
 }
 
-.seach_place_inpit {
+.seach_place_input {
   background: rgb(255, 255, 255);
   padding: 0px 17px;
   border: none;
@@ -87,6 +87,10 @@ body {
   border: 2px solid #fff;
   border-radius: 50%;
   transform: translate(-50%, -50%);
+}
+
+.mark {
+  border: 2px solid red;
 }
 
 /* .MuiFormControl-root .MuiInputLabel-root.Mui-focused {

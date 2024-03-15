@@ -59,6 +59,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const logOutFn = async () => {
     logOut().then(() => {
       setAuthenticated(false);
+      setUser(undefined);
       navigate('/');
     });
   };

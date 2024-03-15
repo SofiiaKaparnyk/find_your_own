@@ -1,16 +1,12 @@
 import { useState } from 'react';
-import { Button, Container, Paper, Typography } from '@mui/material';
-import EventCard from './EventCard';
+import { Button, Paper, Typography } from '@mui/material';
 import { Link, useLoaderData } from 'react-router-dom';
+import PageWrapper from 'components/PageWrapper';
+import EventCard from 'components/Account/EventCard';
 import { IEvent } from 'types/events';
 import { IUserProfile } from 'types/users';
 
 const containerStyles = {
-  position: 'relative',
-  minWidth: '100%',
-  height: 'var(--containerHeight)',
-  overflowY: 'scroll',
-  padding: 3,
   display: 'grid',
   gridTemplateColumns: '1fr 350px',
   alignItems: 'start',
@@ -31,7 +27,7 @@ export default function Account() {
   };
 
   return (
-    <Container sx={containerStyles}>
+    <PageWrapper style={containerStyles}>
       <Paper sx={{ p: 2 }}>
         <Typography>Account</Typography>
       </Paper>
@@ -58,6 +54,6 @@ export default function Account() {
           <Button variant="outlined">Create event</Button>
         </Link>
       </Paper>
-    </Container>
+    </PageWrapper>
   );
 }
