@@ -85,7 +85,7 @@ export const getUsers = async (): Promise<IUser[] | void> => {
 
 export const getEvent = async (
   eventId: string | number
-): Promise<IEvent<Date> | void> => {
+): Promise<IEvent<Date> | undefined | void> => {
   return axiosInstance
     .get<IEvent>(`${Endpoints.EVENT}${eventId}`)
     .then((res) => {
@@ -96,7 +96,7 @@ export const getEvent = async (
     .catch(handleError);
 };
 
-export const getEvents = async (): Promise<IEvent[] | void> => {
+export const getEvents = async (): Promise<IEvent[] | undefined | void> => {
   return axiosInstance
     .get<IEvent[]>(Endpoints.EVENTS)
     .then((res) => {
@@ -107,7 +107,7 @@ export const getEvents = async (): Promise<IEvent[] | void> => {
     .catch(handleError);
 };
 
-export const createEvent = async (data: IEvent): Promise<IEvent | void> => {
+export const createEvent = async (data: IEvent): Promise<IEvent | undefined> => {
   return axiosInstance
     .post(Endpoints.EVENT, data, {
       headers: {

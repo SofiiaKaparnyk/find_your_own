@@ -1,5 +1,5 @@
 import { useContext, createContext, PropsWithChildren, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import { SubmitHandler } from 'react-hook-form';
 import { IUserProfile } from 'types/users';
 import { getUserProfile, logIn, logOut, register } from 'services';
@@ -7,7 +7,6 @@ import { ILoginData, ISignupData } from 'types/auth';
 
 interface IDefaultValue {
   isAuthenticated: boolean;
-  isLoaded: boolean;
   user: IUserProfile | undefined;
   register: SubmitHandler<ISignupData<string>>;
   logIn: SubmitHandler<ILoginData>;
@@ -16,7 +15,6 @@ interface IDefaultValue {
 
 const defaultValue: IDefaultValue = {
   isAuthenticated: false,
-  isLoaded: false,
   user: undefined,
   register: () => {},
   logIn: () => {},
@@ -26,22 +24,21 @@ const defaultValue: IDefaultValue = {
 const AuthContext = createContext(defaultValue);
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
-  const [isAuthenticated, setAuthenticated] = useState(false);
+  const token: unknown = useLoaderData();
+  const [isAuthenticated, setAuthenticated] = useState(!!token);
   const [user, setUser] = useState<IUserProfile>();
-  const [isLoaded, setLoaded] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    getUserProfile().then((res) => {
-      if (res) {
-        setUser(res);
-        setAuthenticated(true);
-        setLoaded(true);
-      } else {
-        setLoaded(true);
-      }
-    });
-  }, []);
+    if(isAuthenticated) {
+      getUserProfile().then((res) => {
+        if (res) {
+          setUser(res);
+        } else {
+        }
+      });
+    }
+  }, [isAuthenticated]);
 
   const logInFn: SubmitHandler<ILoginData> = async (data) => {
     logIn(data).then((res) => {
@@ -66,7 +63,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const value = {
     isAuthenticated,
-    isLoaded,
     user,
     register: registerFn,
     logIn: logInFn,

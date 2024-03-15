@@ -14,7 +14,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { Controller, FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -25,8 +25,9 @@ import PageWrapper from 'components/PageWrapper';
 import MapContainer from 'components/map/MapContainer';
 import LocationMarker from 'components/map/LocationMarker';
 import { useAuth } from 'context/AuthProvider';
-import { createEvent, updateEvent } from 'services';
+import { createEvent, getEvent, updateEvent } from 'services';
 import { IEvent } from 'types/events';
+import { useLoading } from 'context/LoadingContext';
 
 dayjs.extend(utc);
 
@@ -37,7 +38,7 @@ const formStyle: Record<string | number, string & {}> = {
   marginBottom: '14px',
 };
 
-const defaultValues: Omit<IEvent<Date>, 'user' | 'id'> = {
+const defaultValues: IEvent<Date> = {
   title: '',
   description: '',
   date: new Date(),
@@ -47,15 +48,30 @@ const defaultValues: Omit<IEvent<Date>, 'user' | 'id'> = {
 };
 
 export default function CreateEvent({ editMode }: { editMode?: boolean }) {
-  const event: unknown = useLoaderData();
-  const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | undefined>(editMode ?  {
-    lat: (event as IEvent<Date>).latitude,
-    lng: (event as IEvent<Date>).longitude,
-  } : undefined);
+  const [event, setEvent] = useState<IEvent<Date> | undefined>();
+  const { eventId } = useParams();
+  const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | undefined>();
   const { user } = useAuth();
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
+  const { setIsLoading } = useLoading();
+
+  useEffect(() => {
+    if (editMode && eventId) {
+      setIsLoading(true);
+      getEvent(eventId).then((event) => {
+        if (event) {
+          setEvent(event);
+          setMarkerPosition({
+            lat: event.latitude,
+            lng: event.longitude,
+          });
+        }
+      })
+      .finally(() => setIsLoading(false));
+    }
+  }, [editMode, eventId]);
 
   const validationSchema = Yup.object({
     title: Yup.string().required(t('validation.required')),
@@ -79,7 +95,7 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
     handleSubmit,
     setValue,
   } = useForm({
-    defaultValues: editMode ? (event as IEvent<Date>)! : defaultValues,
+    values: editMode && event ? event : defaultValues,
     resolver: yupResolver(validationSchema),
   });
 
@@ -131,7 +147,7 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
 
   const setNewPosition = (position: google.maps.LatLngLiteral) => {
     setMarkerPosition(position);
-  }
+  };
 
   return (
     <PageWrapper>
@@ -222,10 +238,10 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
             </Alert>
             <MapContainer
               defaultCenter={
-                editMode
+                editMode && event
                   ? {
-                      lat: (event as IEvent<Date>).latitude,
-                      lng: (event as IEvent<Date>).longitude,
+                      lat: event.latitude,
+                      lng: event.longitude,
                     }
                   : undefined
               }
@@ -234,10 +250,7 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
               useGetLocation={true}
               useSearch={true}
             >
-              <LocationMarker
-                coords={markerPosition}
-                onPositionChange={setNewPosition}
-              />
+              <LocationMarker coords={markerPosition} onPositionChange={setNewPosition} />
             </MapContainer>
             <FormHelperText error>
               {errors.longitude?.message || errors.latitude?.message}

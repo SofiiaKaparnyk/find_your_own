@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Paper, Typography } from '@mui/material';
-import { Link, useLoaderData } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import PageWrapper from 'components/PageWrapper';
 import EventCard from 'components/Account/EventCard';
 import { IEvent } from 'types/events';
 import { IUserProfile } from 'types/users';
+import { getEvents, getUserProfile } from 'services';
+import { useLoading } from 'context/LoadingContext';
 
 const containerStyles = {
   display: 'grid',
@@ -14,9 +16,25 @@ const containerStyles = {
 };
 
 export default function Account() {
+  const [user, setUser] = useState<IUserProfile>();
+  const [events, setEvents] = useState<IEvent[]>([]);
   const [expandedIndex, setExpanded] = useState(-1);
-  const loaderData = useLoaderData();
-  const { user, events } = loaderData as unknown as { user: IUserProfile; events: IEvent[] };
+  const { setIsLoading } = useLoading();
+
+  useEffect(() => {
+    setIsLoading(true);
+    Promise.all([getUserProfile(), getEvents()])
+      .then((data) => {
+        if (data[0]) {
+          setUser(data[0]);
+        }
+
+        if (data[1]) {
+          setEvents(data[1]);
+        }
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
 
   const handleExpandClick = (index: number) => {
     if (expandedIndex === index) {
@@ -35,12 +53,12 @@ export default function Account() {
         <Typography variant="h5" textAlign="center" sx={{ color: 'var(--lightBlue)' }}>
           My events
         </Typography>
-        {!(events as IEvent[]).length && (
+        {!events.length && (
           <Typography variant="body1" textAlign="center" sx={{ color: 'lightgray' }}>
             No events
           </Typography>
         )}
-        {(events as IEvent[]).map((event, index) => {
+        {events.map((event, index) => {
           return (
             <EventCard
               key={index}
