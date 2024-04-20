@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import PageWrapper from './PageWrapper';
+import PageWrapper from './common/PageWrapper';
 
 export default function Hero() {
   const { t } = useTranslation();
   return (
     <PageWrapper>
-      <Box
-        sx={{
+      <div
+        style={{
           width: 'min(100%, 650px)',
           marginInline: 'auto',
           padding: 2,
@@ -23,7 +23,7 @@ export default function Hero() {
         <Typography sx={{ fontSize: '18px', textAlign: 'center' }}>
           {t('hero.description')}
         </Typography>
-      </Box>
+      </div>
     </PageWrapper>
   );
 }

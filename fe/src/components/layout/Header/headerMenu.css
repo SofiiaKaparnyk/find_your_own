@@ -1,0 +1,86 @@
+.header-menu {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  place-items: center;
+  color: lightgray;
+  line-height: 24px;
+}
+
+.header-menu-btn {
+  height: 32px;
+  width: 32px;
+  color: inherit;
+  outline: none;
+  display: inline-block;
+  white-space: nowrap;
+  text-align: center;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.header-menu-btn:hover,
+.header-menu-btn:active {
+  color: white;
+}
+
+.header-menu-list {
+  position: absolute;
+  top: 32px;
+  right: 0;
+  z-index: 100;
+  display: block;
+  width: 0;
+  opacity: 0;
+  
+  padding: 16px 0;
+  background: var(--darkBlue);
+  border-radius: 6px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  transition: all .3s ease;
+  overflow: hidden;
+}
+
+.header-menu:has(.header-menu-btn:hover, .header-menu-list:hover) .header-menu-list {
+  opacity: 1;
+  width: 150px;
+  padding: 16px 8px;
+}
+
+.header-menu-list-item {
+  height: 40px;
+  border-radius: 6px;
+  padding: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.header-menu-list-item .list-link {
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+}
+
+.header-menu-list-item:has(.list-link.active) {
+  color: white;
+  background: #1677ff;
+}
+
+.header-menu-list-item:hover, .header-menu-list-item:active {
+  color: white;
+}
+
+.header-menu-list .header-menu-list-item span {
+  height: auto;
+}

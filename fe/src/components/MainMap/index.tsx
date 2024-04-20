@@ -5,9 +5,9 @@ import UserMarkers from './UserMarkers';
 import EventMarkers from './EventMarkers';
 import { IEvent } from 'types/events';
 import { IUser } from 'types/users';
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { getEvents, getUsers } from 'services';
 import { useLoading } from 'context/LoadingContext';
+import { Select } from 'antd';
 
 type Filters = 'all' | 'users' | 'events';
 
@@ -37,43 +37,36 @@ export default function MainMap() {
   }, []);
 
   return (
-    <MapContainer
-      style={{ height: 'var(--containerHeight)' }}
-      defaultCenter={user ? { lat: user?.latitude, lng: user?.longitude } : undefined}
-    >
-      {(filter === 'all' || filter === 'users') && (
-        <UserMarkers
-          users={users}
-          infoWindowIndex={infoWindowIndex}
-          setInfoWindowIndex={setInfoWindowIndex}
-        />
-      )}
-      {(filter === 'all' || filter === 'events') && (
-        <EventMarkers
-          events={events}
-          eventWindowIndex={eventWindowIndex}
-          setEventWindowIndex={setEventWindowIndex}
-        />
-      )}
-
-      <div>
-        <FormControl
-          sx={{ position: 'absolute', top: '110px', left: '10px', minWidth: '100px' }}
-        >
-          <InputLabel id="gender-select-label">Filters</InputLabel>
-          <Select
-            labelId="gender-select-label"
-            id="gender-simple-select"
-            label="Gender"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value as Filters)}
-          >
-            <MenuItem value="all">All</MenuItem>
-            <MenuItem value="users">Users</MenuItem>
-            <MenuItem value="events">Events</MenuItem>
-          </Select>
-        </FormControl>
-      </div>
-    </MapContainer>
+    <div style={{ position: 'relative', height: '100%' }}>
+      <MapContainer
+        defaultCenter={user ? { lat: user?.latitude, lng: user?.longitude } : undefined}
+      >
+        {(filter === 'all' || filter === 'users') && (
+          <UserMarkers
+            users={users}
+            infoWindowIndex={infoWindowIndex}
+            setInfoWindowIndex={setInfoWindowIndex}
+          />
+        )}
+        {(filter === 'all' || filter === 'events') && (
+          <EventMarkers
+            events={events}
+            eventWindowIndex={eventWindowIndex}
+            setEventWindowIndex={setEventWindowIndex}
+          />
+        )}
+      </MapContainer>
+      <Select
+        id="gender-simple-select"
+        value={filter}
+        onChange={(value) => setFilter(value)}
+        size="large"
+        style={{ position: 'absolute', top: 10, left: 200, width: '100px' }}
+      >
+        <Select.Option value="all">All</Select.Option>
+        <Select.Option value="users">Users</Select.Option>
+        <Select.Option value="events">Events</Select.Option>
+      </Select>
+    </div>
   );
 }

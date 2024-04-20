@@ -2,18 +2,22 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  text-decoration: none;
+  list-style-type: none;
 }
 
 :root {
-  --darkBlue: #22346a;
-  --lightBlue: #1976d2;
+  --darkBlue: #001529;
+  --middleBlue: #021b36;
+  --lightBlue: #cdcddc;
+  --ghostBlue: #e5edf5;
   --gradient: linear-gradient(0deg, transparent 0%, var(--darkBlue) 100%);
   --headerHeight: 70px;
   --containerHeight: calc(100dvh - var(--headerHeight));
 }
 
 body {
-  min-height: 100dvh;
+  height: 100dvh;
   /* overflow: hidden; */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -23,9 +27,8 @@ body {
 }
 
 #root {
-  position: relative;
-  min-height: inherit;
-  height: 100%;
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
   background-attachment: fixed;
@@ -36,6 +39,10 @@ body {
     radial-gradient(99% 99% at 21% 78%, #7b00ffff 0%, #073aff00 100%),
     radial-gradient(160% 154% at 711px -303px, #2000ffff 0%, #073affff 100%);
 }
+
+/* .ant-typography, .ant-form-item .ant-form-item-label >label {
+  color: var(--lightBlue)
+} */
 
 
 /* Google maps controls  */
@@ -93,22 +100,6 @@ body {
   border: 2px solid red;
 }
 
-/* .MuiFormControl-root .MuiInputLabel-root.Mui-focused {
-  color: var(--darkBlue);
-}
-
-.MuiFormControl-root .MuiOutlinedInput-root {
-  color: var(--darkBlue);
-}
-
-.MuiFormControl-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border: 1px solid var(--darkBlue);
-}
-
-.MuiFormControl-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border: 2px solid var(--darkBlue);
-}
- */
 .MuiFormHelperText-root {
   position: absolute;
   bottom: -20px;
@@ -187,4 +178,8 @@ body {
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background: var(--lightBlue);
+}
+
+.ant-menu .ant-menu-submenu-title .ant-menu-title-content {
+  margin-inline-start: 0;
 }

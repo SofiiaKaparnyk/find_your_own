@@ -1,16 +1,27 @@
 import React from 'react';
-import Header from './Header';
 import { Outlet } from 'react-router-dom';
-import BackdropLoading from 'components/Backdrop';
-import { useLoading } from 'context/LoadingContext';
+import { Layout } from 'antd';
+import { useAuth } from 'context/AuthProvider';
+import Header from './Header';
+import Footer from './Footer';
+
+const innerLayout: React.CSSProperties = {
+  background: 'var(--ghostBlue)',
+  overflowY: 'auto',
+};
 
 export default function PageLayout() {
-  const { isLoading } = useLoading();
+  const { isAuthenticated } = useAuth();
+
   return (
-    <>
+    <Layout>
       <Header />
-      <Outlet />
-      <BackdropLoading loading={isLoading} />
-    </>
+      <Layout style={innerLayout}>
+        <Layout.Content>
+          <Outlet />
+        </Layout.Content>
+      </Layout>
+      {isAuthenticated && <Footer />}
+    </Layout>
   );
 }

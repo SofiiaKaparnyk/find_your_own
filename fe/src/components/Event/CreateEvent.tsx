@@ -21,7 +21,7 @@ import utc from 'dayjs/plugin/utc';
 import { useTranslation } from 'react-i18next';
 import { enqueueSnackbar } from 'notistack';
 
-import PageWrapper from 'components/PageWrapper';
+import PageWrapper from 'components/common/PageWrapper';
 import MapContainer from 'components/map/MapContainer';
 import LocationMarker from 'components/map/LocationMarker';
 import { useAuth } from 'context/AuthProvider';
@@ -50,7 +50,9 @@ const defaultValues: IEvent<Date> = {
 export default function CreateEvent({ editMode }: { editMode?: boolean }) {
   const [event, setEvent] = useState<IEvent<Date> | undefined>();
   const { eventId } = useParams();
-  const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | undefined>();
+  const [markerPosition, setMarkerPosition] = useState<
+    google.maps.LatLngLiteral | undefined
+  >();
   const { user } = useAuth();
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -60,16 +62,17 @@ export default function CreateEvent({ editMode }: { editMode?: boolean }) {
   useEffect(() => {
     if (editMode && eventId) {
       setIsLoading(true);
-      getEvent(eventId).then((event) => {
-        if (event) {
-          setEvent(event);
-          setMarkerPosition({
-            lat: event.latitude,
-            lng: event.longitude,
-          });
-        }
-      })
-      .finally(() => setIsLoading(false));
+      getEvent(eventId)
+        .then((event) => {
+          if (event) {
+            setEvent(event);
+            setMarkerPosition({
+              lat: event.latitude,
+              lng: event.longitude,
+            });
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
   }, [editMode, eventId]);
 

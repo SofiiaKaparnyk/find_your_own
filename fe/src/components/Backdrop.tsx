@@ -9,12 +9,11 @@ const BackdropLoading = ({ loading }: { loading: boolean }) => {
         zIndex: () => 10,
         backgroundColor: 'rgb(255, 255, 255)',
         position: 'absolute',
-        height: 'var(--containerHeight)',
-        top: 'auto',
+        inset: 0,
       }}
       open={loading}
       transitionDuration={{
-        exit: 1000,
+        exit: 800,
       }}
     >
       <CircularProgress sx={{ color: colors.blue[700] }} />

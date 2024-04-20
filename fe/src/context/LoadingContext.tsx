@@ -24,9 +24,7 @@ const LoadingProvider = ({ children }: PropsWithChildren) => {
     <LoadingContext.Provider
       value={{
         isLoading,
-        setIsLoading: (value: boolean) => {
-          setIsLoading(value);
-        },
+        setIsLoading,
       }}
     >
       {children}

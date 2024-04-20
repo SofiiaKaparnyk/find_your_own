@@ -1,7 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import UK from 'assets/languages/ukraine-flag-icon.png';
-import EN from 'assets/languages/united-states-flag-icon.png';
+
 // the translations
 // (tip move them in a JSON file and import them,
 // or even better, manage them separated from your code: https://react.i18next.com/guides/multiple-translation-files)
@@ -20,8 +19,7 @@ const resources = {
         },
       },
       language: {
-        english: 'English',
-        ukrainian: 'Ukrainian'
+        title: 'Change language',
       },
       validation: {
         required: 'This field is required',
@@ -37,7 +35,6 @@ const resources = {
       },
       header: {
         logo: 'FIND YOUR OWN',
-        flag: EN,
       },
       hero: {
         title: 'Find your friend on the map',
@@ -61,8 +58,7 @@ const resources = {
         submit: 'Submit',
         back: 'Back',
         question: 'Already have an account?',
-        warning:
-          "Click on the map and move the marker so you stay in the blue area.",
+        warning: 'Click on the map and move the marker so you stay in the blue area.',
         step1: 'Email and password',
         step2: 'Personal data',
         step3: 'Your approximate location',
@@ -73,7 +69,7 @@ const resources = {
         description: 'Description',
         date: 'Date',
         upload_photo: 'Upload photo',
-        info: "Choose the venue of your event.",
+        info: 'Choose the venue of your event.',
         submit: 'Save',
       },
     },
@@ -92,8 +88,7 @@ const resources = {
         },
       },
       language: {
-        english: 'Англійська',
-        ukrainian: 'Українська'
+        title: 'Змінити мову',
       },
       validation: {
         required: 'Це поле обов`язкове',
@@ -109,7 +104,6 @@ const resources = {
       },
       header: {
         logo: 'ЗНАЙДИ СВОЇХ',
-        flag: UK,
       },
       hero: {
         title: 'Знайди свого товариша на карті',
@@ -145,7 +139,7 @@ const resources = {
         description: 'Опис',
         date: 'Дата',
         upload_photo: 'Завантажити фото',
-        info: "Виберіть місце проведення вашого заходу.",
+        info: 'Виберіть місце проведення вашого заходу.',
         submit: 'Зберегти',
       },
     },

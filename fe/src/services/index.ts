@@ -79,6 +79,19 @@ export const getUsers = async (): Promise<IUser[] | void> => {
     .catch(handleError);
 };
 
+export const updateUserProfile = async (
+  data: Partial<IUserProfile>
+): Promise<IUserProfile | void> => {
+  return axiosInstance
+    .put<IUserProfile>(Endpoints.USER_PROFILE, data)
+    .then((res) => {
+      if (res.statusText === 'OK') {
+        return res.data;
+      }
+    })
+    .catch(handleError);
+};
+
 // ************************************************************** //
 
 // ************************Events methods************************//
@@ -129,6 +142,17 @@ export const updateEvent = async (data: IEvent) => {
         'Content-Type': 'multipart/form-data',
       },
     })
+    .then((res) => {
+      if (res.statusText === 'OK') {
+        return res.data;
+      }
+    })
+    .catch(handleError);
+};
+
+export const deleteEvent = async (id: string | number) => {
+  return axiosInstance
+    .delete(`${Endpoints.EVENT}${id}`)
     .then((res) => {
       if (res.statusText === 'OK') {
         return res.data;

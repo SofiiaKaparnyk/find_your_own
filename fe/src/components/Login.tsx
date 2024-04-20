@@ -6,9 +6,7 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
 import { useAuth } from 'context/AuthProvider';
-import PageWrapper from './PageWrapper';
-
-
+import PageWrapper from './common/PageWrapper';
 
 export default function LogIn() {
   const { t } = useTranslation();
@@ -18,8 +16,7 @@ export default function LogIn() {
     email: Yup.string()
       .email(t('validation.incorrectEmail'))
       .required(t('validation.required')),
-    password: Yup.string()
-      .required(t('validation.required'))
+    password: Yup.string().required(t('validation.required')),
   });
 
   const {
@@ -90,17 +87,15 @@ export default function LogIn() {
           )}
         />
 
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 2 }}
-        >
+        <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
           {t('login.submit')}
         </Button>
 
         <Typography variant="body2">
-          {t('login.question')} <Link style={{ color: colors.blue[700] }} to="/signup">{t('signup.title')}</Link>
+          {t('login.question')}{' '}
+          <Link style={{ color: colors.blue[700] }} to="/signup">
+            {t('signup.title')}
+          </Link>
         </Typography>
       </form>
     </PageWrapper>

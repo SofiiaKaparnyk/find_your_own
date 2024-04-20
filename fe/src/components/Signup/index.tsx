@@ -18,7 +18,7 @@ import Map from './Map';
 import MainForm from './MainForm';
 import PersonalForm from './PersonalForm';
 import { ISignupData } from 'types/auth';
-import PageWrapper from 'components/PageWrapper';
+import PageWrapper from 'components/common/PageWrapper';
 
 const formStyle: Record<string | number, string & {}> = {
   background: 'white',
@@ -112,17 +112,16 @@ export default function SignUp() {
           </Button>
           <Box sx={{ flex: '1 1 auto' }} />
 
-          <Button
-            form="signupForm"
-            type="submit"
-            variant="contained"
-          >
+          <Button form="signupForm" type="submit" variant="contained">
             {t('signup.submit')}
           </Button>
         </Box>
 
-        <Typography variant="body2" >
-          {t('signup.question')} <Link to="/login" style={{ color: colors.blue[700] }}>{t('login.title')}</Link>
+        <Typography variant="body2">
+          {t('signup.question')}{' '}
+          <Link to="/login" style={{ color: colors.blue[700] }}>
+            {t('login.title')}
+          </Link>
         </Typography>
       </Box>
     </PageWrapper>

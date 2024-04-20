@@ -1,24 +1,24 @@
 import { useEffect, useState } from 'react';
-import { Button, Paper, Typography } from '@mui/material';
+import { Avatar, Button, Empty, Flex, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import PageWrapper from 'components/PageWrapper';
-import EventCard from 'components/Account/EventCard';
+import PageWrapper from 'components/common/PageWrapper';
+import EventCard from './EventCard';
 import { IEvent } from 'types/events';
 import { IUserProfile } from 'types/users';
-import { getEvents, getUserProfile } from 'services';
+import { deleteEvent, getEvents, getUserProfile } from 'services';
 import { useLoading } from 'context/LoadingContext';
 
 const containerStyles = {
   display: 'grid',
-  gridTemplateColumns: '1fr 350px',
-  alignItems: 'start',
+  gridTemplateColumns: 'auto 1fr',
+  placeItems: 'start center',
   gap: '32px',
 };
 
 export default function Account() {
   const [user, setUser] = useState<IUserProfile>();
   const [events, setEvents] = useState<IEvent[]>([]);
-  const [expandedIndex, setExpanded] = useState(-1);
   const { setIsLoading } = useLoading();
 
   useEffect(() => {
@@ -34,44 +34,79 @@ export default function Account() {
         }
       })
       .finally(() => setIsLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleExpandClick = (index: number) => {
-    if (expandedIndex === index) {
-      setExpanded(-1);
-      return;
-    }
-    setExpanded(index);
+  const handleDeleteEvent = async (id: number) => {
+    setIsLoading(true);
+    await deleteEvent(id);
+
+    getEvents()
+      .then((data) => {
+        if (data) {
+          setEvents(data);
+        }
+      })
+      .finally(() => setIsLoading(false));
   };
 
+  // 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  const avatarUrl = user ? `${process.env.REACT_APP_API_BASE}${user?.image}` : '';
+
   return (
-    <PageWrapper style={containerStyles}>
-      <Paper sx={{ p: 2 }}>
-        <Typography>Account</Typography>
-      </Paper>
-      <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography variant="h5" textAlign="center" sx={{ color: 'var(--lightBlue)' }}>
-          My events
-        </Typography>
-        {!events.length && (
-          <Typography variant="body1" textAlign="center" sx={{ color: 'lightgray' }}>
-            No events
-          </Typography>
-        )}
-        {events.map((event, index) => {
-          return (
-            <EventCard
-              key={index}
-              expanded={index === expandedIndex}
-              handleExpandClick={() => handleExpandClick(index)}
-              event={event}
-            />
-          );
-        })}
-        <Link to="/event/create" style={{ marginTop: 'auto', margin: 'auto auto 0' }}>
-          <Button variant="outlined">Create event</Button>
-        </Link>
-      </Paper>
-    </PageWrapper>
+    <>
+      <PageWrapper style={containerStyles}>
+        <Flex vertical gap={8} align="center" style={{ marginBottom: '32px' }}>
+          <Avatar size={160} src={avatarUrl} />
+          <Flex vertical gap={0} align="center">
+            <Typography.Text
+              strong
+            >{`${user?.first_name} ${user?.last_name}`}</Typography.Text>
+            <Typography.Text type="secondary">{user?.email}</Typography.Text>
+          </Flex>
+        </Flex>
+
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            overflowY: 'auto',
+            padding: '0 16px 16px',
+          }}
+        >
+          <Flex justify="space-between" style={{ marginBottom: '16px' }}>
+            <Typography.Title level={4}>My events</Typography.Title>
+            <Link to="/event/create">
+              <Button
+                type="primary"
+                shape="circle"
+                title="Add event"
+                icon={<PlusOutlined />}
+              />
+            </Link>
+          </Flex>
+          {!events.length && (
+            <Empty
+              image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+              imageStyle={{ height: 60 }}
+              description={<span>No events</span>}
+            >
+              <Button type="primary">Create Now</Button>
+            </Empty>
+          )}
+          <div
+            style={{
+              display: 'grid',
+              gap: '16px',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+            }}
+          >
+            {events.map((event, index) => {
+              return <EventCard key={index} event={event} onDelete={handleDeleteEvent} />;
+            })}
+          </div>
+        </div>
+      </PageWrapper>
+    </>
   );
 }
