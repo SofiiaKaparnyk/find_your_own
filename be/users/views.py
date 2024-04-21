@@ -1,6 +1,6 @@
 from django.contrib.auth import logout
 from django.utils.text import slugify
-from rest_framework import permissions, status
+from rest_framework import generics, permissions, status
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,7 +8,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import User
-from users.serializers import UserprofilePictureSerializer, UserRegistrationSerializer, UserSerializer, UsersSerializer
+from users.serializers import (
+    ChangePasswordSerializer,
+    UserprofilePictureSerializer,
+    UserRegistrationSerializer,
+    UserSerializer,
+    UsersSerializer,
+)
 
 from .serializers import CustomTokenObtainSerializer
 
@@ -50,6 +56,19 @@ class UserRegisterView(APIView):
             username = f"{base_username}-{suffix}"
             suffix += 1
         return username
+
+
+class UserChangePasswordView(APIView):
+    queryset = User.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = ChangePasswordSerializer
+
+    def put(self, request, *args, **kwargs):
+        serializer = ChangePasswordSerializer(data=request.data, instance=request.user)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogout(APIView):
