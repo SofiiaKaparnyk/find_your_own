@@ -22,6 +22,12 @@ class UserSerializer(serializers.ModelSerializer):
         exclude = ("password", "groups", "user_permissions")
 
 
+class UserprofilePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["image"]
+
+
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

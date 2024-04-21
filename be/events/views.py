@@ -9,7 +9,7 @@ from .serializers import EventSerializer, EventUpdateSerializer
 
 class EventsListView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Event.objects.all()
+    queryset = Event.objects.all().order_by("date")
     serializer_class = EventSerializer
 
 

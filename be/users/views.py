@@ -8,7 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import User
-from users.serializers import UserRegistrationSerializer, UserSerializer, UsersSerializer
+from users.serializers import UserprofilePictureSerializer, UserRegistrationSerializer, UserSerializer, UsersSerializer
 
 from .serializers import CustomTokenObtainSerializer
 
@@ -79,7 +79,6 @@ class UserProfileView(APIView):
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid(raise_exception=True):
             data = serializer.validated_data
-            user = User.objects.get(pk=user.pk)
             user.first_name = data["first_name"]
             user.last_name = data["last_name"]
             user.dob = data["dob"]
@@ -87,6 +86,20 @@ class UserProfileView(APIView):
             user.latitude = data["latitude"]
             user.longitude = data["longitude"]
             user.description = data["description"]
+            user.save()
+            serializer_data = UserSerializer(user)
+            return Response(serializer_data.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserProfilePictureView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def patch(self, request):
+        user = request.user
+        serializer = UserprofilePictureSerializer(user, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            data = serializer.validated_data
             user.image = data["image"]
             user.save()
             serializer_data = UserSerializer(user)
